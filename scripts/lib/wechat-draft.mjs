@@ -27,19 +27,37 @@ async function wxPostJson(url, body) {
   return data;
 }
 
-/** multipart 上传（form-data + Node fetch） */
+/** multipart 上传（form-data + Buffer + Node fetch）
+ * 不能用 createReadStream 作为 fetch body：Node 原生 fetch（undici）
+ * 对 form-data 流处理不完整，微信会收到空 media，报 41005。
+ * 必须读成 Buffer，并显式带 Content-Length。 */
 async function wxUpload(url, filePath, fieldName = 'media') {
   if (!fs.existsSync(filePath)) {
     throw new Error(`找不到文件: ${filePath}`);
   }
+  const buf = fs.readFileSync(filePath);
+  const typeByExt = {
+    '.png': 'image/png',
+    '.jpg': 'image/jpeg',
+    '.jpeg': 'image/jpeg',
+    '.gif': 'image/gif',
+    '.webp': 'image/webp',
+  };
+  const contentType =
+    typeByExt[path.extname(filePath).toLowerCase()] || 'application/octet-stream';
   const form = new FormData();
-  form.append(fieldName, fs.createReadStream(filePath), {
+  form.append(fieldName, buf, {
     filename: path.basename(filePath),
+    contentType,
+    knownLength: buf.length,
   });
   const res = await fetch(url, {
     method: 'POST',
-    headers: form.getHeaders(),
-    body: form,
+    headers: {
+      ...form.getHeaders(),
+      'Content-Length': form.getLengthSync(),
+    },
+    body: form.getBuffer(),
   });
   const data = await res.json();
   if (data.errcode && data.errcode !== 0) {
