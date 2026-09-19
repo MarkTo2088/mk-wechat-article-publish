@@ -13,7 +13,9 @@ Markdown 内联排版 + 微信草稿 API。可选能力通过文章 `frontmatter
 
 > 发布产物进入公众号**草稿箱**，由人工在后台确认后群发——Skill 不会自动群发。
 
-**联系 / 私域**：作者微信 `MarkTo2088`。使用、定制或问题反馈可添加，进私域交流。
+**联系 / 关注**：
+- 作者微信 `MarkTo2088`：定制、问题反馈、私域交流  
+- 公众号 **XLanAI**：关注获取更多 Skill、固定 IP 发布专线等更新（微信搜「XLanAI」）
 
 ---
 
@@ -194,7 +196,8 @@ bash scripts/gen_miniprogram_qr.sh -o app.png --scene promo --page pages/home/in
 
 完整踩坑记录见 `references/gotchas.md`。
 
-作者微信：`MarkTo2088`
+作者微信：`MarkTo2088`  
+公众号：**XLanAI**（搜关注，获取更多 Skill / 固定 IP 发布专线等）
 
 ---
 

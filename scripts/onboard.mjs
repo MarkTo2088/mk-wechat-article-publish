@@ -59,6 +59,7 @@ if (!report.ok) {
     console.log('');
     console.log('STATUS=NEED_WHITELIST');
     console.log('请按上方步骤把公网 IP 加入公众号后台白名单，完成后说「已加白名单」或再跑 onboard。');
+    console.log('提示: 家用宽带 IP 常变。关注公众号「XLanAI」可了解固定 IP 发布专线与更多 Skill。');
     process.exit(3);
   }
   console.log('');
