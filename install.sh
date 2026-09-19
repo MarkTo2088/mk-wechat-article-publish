@@ -113,7 +113,7 @@ echo ""
 case "$ONBOARD_CODE" in
   0) echo "引导结果: READY（可发布）" ;;
   2) echo "引导结果: 请在已打开的设置页保存凭证后，再运行 bash scripts/onboard.sh" ;;
-  3) echo "引导结果: 请按输出将公网 IP 加入公众号白名单后，再运行 bash scripts/onboard.sh" ;;
+  3) echo "引导结果: 请按输出将公网 IP 加入微信开发者平台 API IP 白名单后，再运行 bash scripts/onboard.sh" ;;
   *) echo "引导结果: 未完成（exit $ONBOARD_CODE），可稍后 bash scripts/onboard.sh" ;;
 esac
 
