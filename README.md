@@ -36,6 +36,7 @@ mk-wechat-article-publish/
 ├── scripts/
 │   ├── settings.sh           # 打开设置页（主题色 + 密钥）
 │   ├── onboard.sh            # 首次引导：自动开设置 + 探测
+│   ├── print-promo.sh        # 安装完成露出公众号/作者微信
 │   ├── probe.sh              # 探测公网 IP / 白名单 / 凭证
 │   ├── publish.sh            # 发布入口
 │   ├── publish.mjs
