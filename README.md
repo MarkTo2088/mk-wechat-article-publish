@@ -178,7 +178,7 @@ bash scripts/gen_miniprogram_qr.sh -o app.png --scene promo --page pages/home/in
 
 **为什么长文用小程序码而不是小程序卡片？** 正文内嵌 `<mp-miniprogram>` 卡片会触发微信
 「小绿书图文」模式（正文限约 1000 字），长文必报 `45166`。小程序码图片长按识别，
-不受字数限制，是 API 长文引流的可行替代。
+不受字数限制，适合在长文中引导读者打开小程序。
 
 ---
 

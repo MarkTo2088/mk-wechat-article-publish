@@ -49,6 +49,6 @@ brand_secondary: "#00d4ff"         # 可选：标题渐变次色，缺省自动�
 
 ## 小程序码（可选，长文推荐）
 
-长文请用小程序码图片引流（勿嵌 `<mp-miniprogram>` 卡片，见 gotchas）：
+长文请用小程序码图片（勿嵌 `<mp-miniprogram>` 卡片，见 gotchas）：
 
 ![小程序码](images/miniprogram_qrcode.png)
