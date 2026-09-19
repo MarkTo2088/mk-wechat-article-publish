@@ -71,6 +71,10 @@ AppID 仍可在公众平台「设置与开发 → 账号设置 → 账号详情�
 
 `bash scripts/extract-layout.sh <公众号文章链接>` 只提炼排版（配色、标题块、引用、画廊），写入工作空间 `.mk-wechat-publish/layout-ref.json`，**不保存正文**。微信若返回拦截页，把网页另存为 HTML 后加 `--file`。
 
+## 3.5 配图水印
+
+正式发布前 `publish.sh` 会检查 `.mk-wechat-publish/asset-checks/`。本地封面和正文图必须先 `bash scripts/verify-assets.sh <文章.md>`，助手打开图片确认没有角标、logo、「AI生成」后，再 `--ok`。文件一换就要重核。边角小标可用 `python3 scripts/crop-badge.py`，裁完仍要重看、重标。不要用这个步骤抹掉他人作品的版权水印。
+
 ## 4. 正文图片必须走 uploadimg
 
 微信会过滤图文 `content` 里的外部图片 URL。本工作流在发布时自动：

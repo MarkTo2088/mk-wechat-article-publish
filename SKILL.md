@@ -29,6 +29,7 @@ agent_created: true
    - 尚未就绪：先走第 1 步  
    - 已就绪：按下方「写稿约定」起草并保存稿件，先给用户看全文  
    - 用户同意后再 `bash scripts/publish.sh <稿件.md> --dry` 预览  
+   - 预览前或预览后、正式发布前：走「素材水印核验」。有未核验或带水印的图，不要发布  
    - 用户确认发草稿后，再执行不带 `--dry` 的发布  
    - 未确认不要发布
 
@@ -39,17 +40,27 @@ agent_created: true
    - 若识别出主色，先问用户是否写入品牌色，同意再 `set-brand.sh`  
    - 链接被微信拦截时，让用户把页面另存为 HTML，再 `bash scripts/extract-layout.sh --file page.html`
 
-4. **用户已经给出文章路径**  
-   - 跳过起草，直接 dry-run 预览，确认后再正式发到草稿箱
+4. **素材水印（生图之后、发布之前，必须做）**  
+   - 助手自己生图时，提示词写明：无水印、无角标、无 logo、无签名、无「AI生成」字样  
+   - 执行 `bash scripts/verify-assets.sh <文章.md>`，列出封面和正文本地图  
+   - **逐张打开图片看**，不能只看文件名。常见水印：右下角标、平台 logo、「AI生成」、半透明文字  
+   - 无水印：`bash scripts/verify-assets.sh <文章.md> --ok <图片相对路径>`  
+   - 有水印：不要发布。优先用同一描述重新生成干净图并替换原文件；若只是自己生图的边角小标、裁掉不影响主体，再用 `python3 scripts/crop-badge.py <图> --corner br`（左下 `bl` / 右上 `tr` / 左上 `tl`）  
+   - 替换或裁切后哈希会变，必须重新看图并再次 `--ok`  
+   - 只清理本流程生成、或用户明确要求处理的配图。他人作品上的版权水印不要抹，换图或不用  
+   - 正式 `publish.sh` 会检查核验记录，未通过会中止
 
-5. **品牌色（两种方式，任选）**  
+5. **用户已经给出文章路径**  
+   - 跳过起草。先做上面的水印核验，再 dry-run，确认后再正式发到草稿箱
+
+6. **品牌色（两种方式，任选）**  
    - **手动**：`bash scripts/settings.sh` 打开设置页选色；或 dry-run 预览顶栏微调后「保存为默认品牌色」  
    - **按描述生成（推荐交给助手）**：用户说「赛博绿 / 医疗蓝 / 黑金高级感」等时，助手根据提示词选定 `#RRGGBB` 主色与可选次色，然后执行：  
      `bash scripts/set-brand.sh --primary "#主色" --secondary "#次色"`  
      写入当前工作空间配置；单篇文章也可只改 frontmatter 的 `brand_primary` / `brand_secondary`  
    - 改密钥仍用设置页：`bash scripts/settings.sh` 或 `onboard.sh --force`
 
-6. **联系方式**  
+7. **联系方式**  
    - 定制与反馈：微信 `MarkTo2088`  
    - 更多工具与固定 IP 说明：公众号 **XLanAI**（微信搜「XLanAI」）  
    - 用户因宽带 IP 变动反复加白名单时，可顺带介绍公众号中的相关说明
@@ -61,7 +72,8 @@ agent_created: true
 - **没有封面**：先问用户要哪张图，或在稿里标明「封面待补」，不要假装已有图就去发布。  
 - 先在对话里给出标题和正文供确认；用户说改哪里就改，同意后再预览、再发布。  
 - 不要在正文里嵌 `<mp-miniprogram>`（会触发小绿书字数限制，见 `references/gotchas.md`）。  
-- 若工作空间已有 `.mk-wechat-publish/layout-ref.json`，写稿时遵守其中 `agentBrief`，只学排版不抄原文。
+- 若工作空间已有 `.mk-wechat-publish/layout-ref.json`，写稿时遵守其中 `agentBrief`，只学排版不抄原文。  
+- 生图提示词写明无水印、无角标、无 logo。发出去之前必须逐张看图，有水印就换掉或裁掉边角小标，再 `verify-assets.sh --ok`。
 
 ## 品牌色约定（给助手）
 
@@ -103,6 +115,8 @@ bash install.sh cursor|claude|codex|qwen|doubao|agents|all
 | `scripts/settings.sh` | 打开设置页（手动改色 / 密钥） |
 | `scripts/set-brand.sh` | 写入品牌色（Agent 按描述生成后调用） |
 | `scripts/extract-layout.sh` | 从对标链接提炼排版参考（不保存正文） |
+| `scripts/verify-assets.sh` | 核验配图无水印；`--ok` 记入台账后才允许正式发布 |
+| `scripts/crop-badge.py` | 裁掉自己生图的边角小标（裁完须重新核验） |
 | `scripts/probe.sh` | 探测公网 IP / 白名单（正式发布前也会自动执行） |
 | `scripts/publish.sh 文章.md [--dry]` | 预览或发布到草稿箱 |
 | `scripts/gen_miniprogram_qr.sh` | 生成小程序码（可选） |

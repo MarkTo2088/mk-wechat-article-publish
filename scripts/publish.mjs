@@ -11,6 +11,7 @@ import { publishToWechatDraft } from './lib/wechat-draft.mjs';
 import { resolveConfig } from './lib/local-config.mjs';
 import { wrapDryPreview } from './lib/dry-preview.mjs';
 import { runProbe, formatProbeReport } from './lib/probe.mjs';
+import { formatAssetReport, inspectAssets } from './lib/asset-check.mjs';
 
 const argv = process.argv.slice(2);
 const DRY = argv.includes('--dry');
@@ -119,6 +120,11 @@ if (DRY) {
   console.log('[DRY] 已写', outPath);
   console.log('[DRY] 画廊区块:', galleryCount, '| 主色:', palette.primary);
   console.log('[DRY] 顶栏可选色；保存默认色需先运行: bash scripts/settings.sh');
+  const assetPreview = inspectAssets(MD_PATH);
+  if (!assetPreview.ok && assetPreview.local.length) {
+    console.log('[DRY] 配图还没完成水印核验，正式发布会被拦住。');
+    console.log(formatAssetReport(assetPreview));
+  }
   const openCmd =
     process.platform === 'darwin'
       ? 'open'
@@ -146,6 +152,13 @@ const probe = await runProbe({ startDir: MD_DIR });
 console.log(formatProbeReport(probe));
 if (!probe.ok) {
   console.error('\n发布已中止。请按上方步骤配置 IP 白名单后重试，或单独运行: bash scripts/probe.sh');
+  process.exit(1);
+}
+
+const assets = inspectAssets(MD_PATH);
+console.log(formatAssetReport(assets));
+if (!assets.ok) {
+  console.error('\n发布已中止：本地配图未通过水印核验（或文件在核验后被替换）。');
   process.exit(1);
 }
 
