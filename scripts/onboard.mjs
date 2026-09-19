@@ -43,7 +43,7 @@ if (needSettings) {
   console.log('【需要配置】公众号 AppID / AppSecret 尚未就绪。');
   console.log(`已打开设置页: ${settingsUrl}`);
   console.log('请在浏览器中填写：品牌色（可选）+ 公众号 AppID/AppSecret，点保存。');
-  console.log('保存后告诉 Agent「已保存」，或再次运行: bash scripts/onboard.sh');
+  console.log('保存完成后回到对话说一声「已保存」，或再次运行: bash scripts/onboard.sh');
   console.log('');
   console.log('STATUS=NEED_SETTINGS');
   process.exit(2);
@@ -59,7 +59,7 @@ if (!report.ok) {
     console.log('');
     console.log('STATUS=NEED_WHITELIST');
     console.log('请按上方步骤把公网 IP 加入公众号后台白名单，完成后说「已加白名单」或再跑 onboard。');
-    console.log('提示: 家用宽带 IP 常变。关注公众号「XLanAI」可了解固定 IP 发布专线与更多 Skill。');
+    console.log('说明：家用宽带出口 IP 可能会变。可关注公众号「XLanAI」了解固定 IP 发布相关说明。');
     process.exit(3);
   }
   console.log('');
@@ -70,6 +70,6 @@ if (!report.ok) {
 
 console.log('');
 console.log('STATUS=READY');
-console.log('已就绪。可将 Markdown 发给我：默认先 dry-run 预览，再确认是否发到草稿箱。');
-console.log('更多 Skill / 固定 IP 发布专线：关注公众号「XLanAI」；定制私聊 MarkTo2088。');
+console.log('配置已就绪。可对 Markdown 先预览（dry-run），确认后再发布到草稿箱。');
+console.log('更多工具与固定 IP 说明：公众号「XLanAI」；定制与反馈：微信 MarkTo2088。');
 process.exit(0);

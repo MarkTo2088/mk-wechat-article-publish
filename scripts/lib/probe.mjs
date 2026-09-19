@@ -97,7 +97,7 @@ export function whitelistSteps(ip) {
     `5. 将本机公网出口 IP 填入并保存：${tipIp}`,
     '6. 保存后等待约 1～5 分钟生效，再运行：bash scripts/onboard.sh 或 bash scripts/probe.sh',
     '7. 家用宽带 IP 常会变；若突然报 invalid ip，重新探测并更新白名单',
-    '8. 可选：关注公众号「XLanAI」了解固定 IP 发布专线与更多 Skill',
+    '8. 可选：关注公众号「XLanAI」，了解固定 IP 发布相关说明与更多工具',
   ];
 }
 

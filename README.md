@@ -1,21 +1,21 @@
 # mk-wechat-article-publish
 
-把 Markdown 一键渲染成 **微信公众号图文草稿**（发布到草稿箱，不群发）的 Agent Skill。
+把 Markdown 一键渲染成 **微信公众号图文草稿**（发布到草稿箱，不群发）。
 
-Markdown 内联排版 + 微信草稿 API。可选能力通过文章 `frontmatter`、本地设置页或 `config.json` 声明：
+支持品牌色排版、横向滑动画廊、小程序码，以及本地设置页一次配置主题色与发布凭证。可作为 AI 助手的 Skill 安装使用，也可在本机直接跑脚本。
 
 | 能力 | 说明 | 是否可选 |
 | --- | --- | --- |
-| 品牌色 | 标题/加粗/表头/引用边框使用你的品牌主色；dry-run 顶栏可选色盘 | 可选 |
-| 横向滑动画廊 | 多图 `<section>` 包裹 → 手机端左右滑动 | 可选 |
-| 小程序码 | 生成小程序码图片，长按识别引流 | 可选 |
-| 本地统一设置 | 主题色 + 公众号/小程序密钥一次写入 `config.local.json` | 推荐 |
+| 品牌色 | 标题/加粗/表头/引用边框使用品牌主色；预览页顶栏可选色 | 可选 |
+| 横向滑动画廊 | 多图左右滑动浏览 | 可选 |
+| 小程序码 | 生成小程序码图片，方便读者长按进入小程序 | 可选 |
+| 本地统一设置 | 主题色与公众号/小程序凭证写入本机 `config.local.json` | 推荐 |
 
-> 发布产物进入公众号**草稿箱**，由人工在后台确认后群发——Skill 不会自动群发。
+> 文章只会进入公众号**草稿箱**，需你在后台确认后再群发——本工具不会自动群发。
 
-**联系 / 关注**：
-- 作者微信 `MarkTo2088`：定制、问题反馈、私域交流  
-- 公众号 **XLanAI**：关注获取更多 Skill、固定 IP 发布专线等更新（微信搜「XLanAI」）
+**联系方式**：
+- 微信 `MarkTo2088`：定制与问题反馈  
+- 公众号 **XLanAI**：微信搜「XLanAI」，获取更多工具与固定 IP 发布相关说明
 
 ---
 
@@ -36,7 +36,7 @@ mk-wechat-article-publish/
 ├── scripts/
 │   ├── settings.sh           # 打开设置页（主题色 + 密钥）
 │   ├── onboard.sh            # 首次引导：自动开设置 + 探测
-│   ├── print-promo.sh        # 安装完成露出公众号/作者微信
+│   ├── print-promo.sh        # 安装完成后的关注提示
 │   ├── probe.sh              # 探测公网 IP / 白名单 / 凭证
 │   ├── publish.sh            # 发布入口
 │   ├── publish.mjs
@@ -106,15 +106,15 @@ bash install.sh all             # 装到本脚本已知的全部目标
 
 **兼容原则**：发布逻辑是本地 Node 脚本（`scripts/*.sh`），不绑死某一家 IDE。任意能执行终端命令的 Agent，克隆仓库后按 `SKILL.md` 调用即可。
 
-### 给 Agent 发送的话术
+### 给助手发送的安装说明
 
-只需这一句（复制发送）。安装后 Agent 会按 `SKILL.md` 自动引导设置页与 IP 白名单，无需再背探测/发布话术。
+复制下面一句发给 AI 助手即可。装好后它会引导你完成设置与 IP 白名单，一般不用再记其它命令。
 
 ```text
-按 https://github.com/MarkTo2088/mk-wechat-article-publish 安装 mk-wechat-article-publish，装完按 SKILL.md 引导我完成配置。
+按 https://github.com/MarkTo2088/mk-wechat-article-publish 安装 mk-wechat-article-publish，装完按说明引导我完成配置。
 ```
 
-之后直接说「发这篇 xxx.md」或把文章路径丢给 Agent 即可。
+之后直接说「发这篇 xxx.md」或把文章路径发给助手即可。
 
 ---
 
@@ -198,7 +198,7 @@ bash scripts/gen_miniprogram_qr.sh -o app.png --scene promo --page pages/home/in
 完整踩坑记录见 `references/gotchas.md`。
 
 作者微信：`MarkTo2088`  
-公众号：**XLanAI**（搜关注，获取更多 Skill / 固定 IP 发布专线等）
+公众号：**XLanAI**（微信搜「XLanAI」）
 
 ---
 
