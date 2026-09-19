@@ -106,7 +106,7 @@
     <button type="button" class="ghost" id="btnReload">重新加载</button>
     <button type="button" class="ghost" id="btnProbe">探测 IP / 白名单</button>
   </div>
-  <p class="warn">请勿将含密钥的配置提交到 Git。建议在项目 <code>.gitignore</code> 中加入 <code>.mk-wechat-publish/</code>。发布走本机公网 IP，须加入对应公众号的 IP 白名单。</p>
+  <p class="warn">请勿将含密钥的配置提交到 Git。建议在项目 <code>.gitignore</code> 中加入 <code>.mk-wechat-publish/</code>。发布走本机公网 IP，须加入对应公众号的 <strong>API IP 白名单</strong>（微信开发者平台 → 我的业务 → 公众号/服务号 → 基础信息 → 开发密钥；旧公众平台「基本配置」入口已迁移）。</p>
   <p class="sub" style="margin-top:16px">欢迎关注公众号 <strong style="color:var(--accent)">XLanAI</strong>（微信搜「XLanAI」）· 作者微信 MarkTo2088</p>
   <pre id="probeOut" style="display:none;white-space:pre-wrap;background:#12151a;border:1px solid var(--border);border-radius:8px;padding:12px;font-size:0.8rem;line-height:1.45;color:var(--muted);margin-top:12px;"></pre>
   <p id="msg"></p>

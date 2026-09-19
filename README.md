@@ -72,7 +72,7 @@ mk-wechat-article-publish/
    export WECHAT_APP_ID="你的公众号 AppID"
    export WECHAT_APP_SECRET="你的公众号 AppSecret"
    ```
-4. **IP 白名单**：每个公众号各自配置；`onboard.sh` / `probe.sh` 会打印公网 IP。
+4. **IP 白名单**：每个公众号各自配置（**微信开发者平台** → 我的业务 → 公众号/服务号 → 基础信息 → 开发密钥 → API IP 白名单；自 2025-12-01 起已从公众平台「开发接口管理」迁出）。`onboard.sh` / `probe.sh` 会打印公网 IP 与完整步骤。
 
 **配置优先级（多公众号）**  
 品牌色：文章 frontmatter → `--config` → **工作空间** `.mk-wechat-publish/config.json` → skill 级 `config.local.json` → 默认  
@@ -201,8 +201,8 @@ bash scripts/gen_miniprogram_qr.sh -o app.png --scene promo --page pages/home/in
 
 | 报错 / 现象 | 原因与对策 |
 | --- | --- |
-| `invalid ip ... not in whitelist` | 运行 `bash scripts/probe.sh`，按输出把公网 IP 加入后台白名单 |
-| 探测失败但网页能登录公众号 | 与网页无关；API 必须白名单。确认填的是 probe 给出的出口 IP |
+| `invalid ip ... not in whitelist` / `40164` | 运行 `bash scripts/probe.sh`，按输出到 **微信开发者平台** → 我的业务 → 公众号/服务号 → 基础信息 → 开发密钥 → API IP 白名单 添加出口 IP（旧「公众平台·基本配置」路径已迁走） |
+| 探测失败但网页能登录公众号 | 与网页无关；API 必须白名单。确认填的是 probe 给出的出口 IP；须用管理员/开发者账号登录开发者平台 |
 | `45166 内容超长` | 正文内嵌了小绿书模式内容/小程序卡片 → 换小程序码图片、精简正文 |
 | `40066 invalid url rid` | `draft/batchdel` 批量删除偶发网关错 → 用单篇 `draft/delete` |
 | 颜色不是品牌色 | 查 frontmatter / 工作空间配置 / 设置页；dry-run 顶栏可微调 |

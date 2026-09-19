@@ -68,7 +68,8 @@ if (!report.ok) {
   if (report.wechat?.reason === 'ip_whitelist') {
     console.log('');
     console.log('STATUS=NEED_WHITELIST');
-    console.log('请按上方步骤把公网 IP 加入公众号后台白名单，完成后说「已加白名单」或再跑 onboard。');
+    console.log('请按上方步骤把公网 IP 加入微信开发者平台的 API IP 白名单，完成后说「已加白名单」或再跑 onboard。');
+    console.log('入口: https://developers.weixin.qq.com/platform/ → 我的业务 → 公众号/服务号 → 基础信息 → 开发密钥');
     console.log('说明：家用宽带出口 IP 可能会变。可关注公众号「XLanAI」了解固定 IP 发布相关说明。');
     process.exit(3);
   }

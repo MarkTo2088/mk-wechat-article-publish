@@ -90,14 +90,16 @@ export async function probeWechatToken(appId, appSecret) {
 export function whitelistSteps(ip) {
   const tipIp = ip || '（先运行探测得到的公网 IP）';
   return [
-    '1. 浏览器打开 https://mp.weixin.qq.com 并用管理员微信扫码登录',
-    '2. 左侧进入「设置与开发」→「基本配置」',
-    '3. 在「公众号开发信息」确认已开通开发者权限；记下 AppID（与本 skill 配置一致）',
-    '4. 同页找到「IP 白名单」→「修改」/「设置」',
+    '1. 浏览器打开 https://developers.weixin.qq.com/platform/ ，用管理员或开发者微信扫码登录',
+    '2. 进入「我的业务」→「公众号」或「服务号」→ 选中对应账号',
+    '3. 「基础信息」确认 AppID 与本 skill 配置一致；AppSecret / API IP 白名单在「基础信息」→「开发密钥」',
+    '4. 打开「开发密钥」页的「API IP 白名单」→ 添加 / 修改',
     `5. 将本机公网出口 IP 填入并保存：${tipIp}`,
-    '6. 保存后等待约 1～5 分钟生效，再运行：bash scripts/onboard.sh 或 bash scripts/probe.sh',
-    '7. 家用宽带 IP 常会变；若突然报 invalid ip，重新探测并更新白名单',
-    '8. 可选：关注公众号「XLanAI」，了解固定 IP 发布相关说明与更多工具',
+    '6. 保存后等待约数分钟生效，再运行：bash scripts/onboard.sh 或 bash scripts/probe.sh',
+    '7. 须为该号的管理员或开发者才有权限；运营者角色无法在开发者平台改白名单',
+    '8. 家用宽带 IP 常会变；若突然报 invalid ip / 40164，重新探测并更新白名单',
+    '9. 说明：自 2025-12-01 起，「设置与开发 → 开发接口管理」已迁至微信开发者平台（旧公众平台路径已失效）',
+    '10. 可选：关注公众号「XLanAI」，了解固定 IP 发布相关说明与更多工具',
   ];
 }
 

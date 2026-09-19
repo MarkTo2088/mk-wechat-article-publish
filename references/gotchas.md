@@ -48,14 +48,18 @@ bash scripts/probe.sh
 
 正式 `publish.sh`（非 `--dry`）发布前会自动跑同一套探测，失败则中止。
 
-### 3.2 在公众号后台加入白名单
+### 3.2 在微信开发者平台加入 API IP 白名单
 
-1. 浏览器打开 [https://mp.weixin.qq.com](https://mp.weixin.qq.com)，管理员微信扫码登录  
-2. 左侧：**设置与开发** → **基本配置**  
-3. 「公众号开发信息」确认 AppID 与本 skill 配置一致（设置页 / 环境变量）  
-4. 同页找到 **IP 白名单** → **修改** / **设置**  
+> **入口已迁移（2025-12-01 起）**：原「微信公众平台 → 设置与开发 → 开发接口管理 / 基本配置」中的 AppSecret、IP 白名单等，已迁至 **微信开发者平台**。官方说明：[「开发接口管理」模块升级说明](https://developers.weixin.qq.com/doc/subscription/guide/dev/migration.html)。
+
+1. 浏览器打开 [https://developers.weixin.qq.com/platform/](https://developers.weixin.qq.com/platform/)，用**管理员或开发者**微信扫码登录（仅「运营者」无权限）  
+2. **我的业务** → **公众号** / **服务号** → 选中要发布的账号  
+3. **基础信息**：核对 AppID 与本 skill 配置一致  
+4. **基础信息** → **开发密钥**：管理 AppSecret，并打开 **API IP 白名单**  
 5. 填入 `probe.sh` 给出的公网 IP（若报错里有「微信看到的 IP」，以该 IP 为准）并保存  
-6. 等待约 1～5 分钟后再次 `bash scripts/probe.sh`，直到显示 OK  
+6. 等待约数分钟后再次 `bash scripts/probe.sh`，直到显示 OK  
+
+AppID 仍可在公众平台「设置与开发 → 账号设置 → 账号详情」查看，但不在那里改密钥与白名单。
 
 ### 3.3 其它说明
 
