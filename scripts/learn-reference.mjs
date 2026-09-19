@@ -131,10 +131,12 @@ if (isCli) {
   fs.writeFileSync(jsonPath, JSON.stringify(stored, null, 2) + '\n', 'utf8');
   fs.writeFileSync(mdPath, renderTemplateMarkdown(report, saved), 'utf8');
 
-  const imageNote = saved.length
-    ? `已下载 ${saved.length} 张参考图到 ${imgDir}（只观察风格）`
-    : report.imageUrls.length
-      ? '参考图没下载成功。可改用浏览器另存 HTML 后 --file，或让助手打开原文看图。'
-      : '这篇没有可下载的正文图。';
+  const imageNote = args.skipImages
+    ? '已跳过下载参考图。'
+    : saved.length
+      ? `已下载 ${saved.length} 张参考图到 ${imgDir}（只观察风格）`
+      : report.imageUrls.length
+        ? '参考图没下载成功。可改用浏览器另存 HTML 后 --file，或让助手打开原文看图。'
+        : '这篇没有可下载的正文图。';
   printReport(report, { json: jsonPath, md: mdPath }, imageNote);
 }
