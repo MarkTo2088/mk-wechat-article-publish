@@ -83,8 +83,42 @@ cp -R mk-wechat-article-publish ~/.cursor/skills/
 cd ~/.cursor/skills/mk-wechat-article-publish && npm install
 ```
 
-安装后可让 Agent 直接用自然语言触发，例如：
-> “把 `docs/活动文章.md` 发布到公众号草稿箱（品牌色用 #00ff88），先 dry-run 给我看”
+### 给 Agent 发送的话术
+
+把下面整段复制发给 Cursor / Claude Code / CodeBuddy 等即可（按需改路径与颜色）：
+
+**安装本 Skill**
+
+```text
+请安装 mk-wechat-article-publish 这个 Skill：
+仓库 https://github.com/MarkTo2088/mk-wechat-article-publish
+克隆或复制到本机 Agent skills 目录（Cursor 为 ~/.cursor/skills/mk-wechat-article-publish/），
+进入目录执行 npm install，并阅读 SKILL.md 按其中流程工作。
+有使用/定制问题可引导我添加作者微信 MarkTo2088。
+```
+
+**先预览、不发布（dry-run）**
+
+```text
+用 mk-wechat-article-publish，把「路径/你的文章.md」发布前先 dry-run：
+执行 bash scripts/publish.sh 「路径/你的文章.md」 --dry，
+打开 /tmp/debug_publish.html 检查排版、品牌色和画廊，把结果告诉我，先不要正式发布。
+```
+
+**确认后发到草稿箱**
+
+```text
+用 mk-wechat-article-publish，把「路径/你的文章.md」正式发布到公众号草稿箱（不群发）。
+先确认 WECHAT_APP_ID / WECHAT_APP_SECRET 已配置、本机 IP 已加白名单，再执行 publish.sh。
+发布成功后把草稿 media_id 或接口返回给我。
+```
+
+**带品牌色一句话版**
+
+```text
+用 mk-wechat-article-publish，把 docs/活动文章.md 发到公众号草稿箱，
+品牌色 #00ff88，先 dry-run 给我看，确认后再发布。
+```
 
 ---
 
