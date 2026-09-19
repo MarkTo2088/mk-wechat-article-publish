@@ -112,6 +112,9 @@ case "$ONBOARD_CODE" in
   3) echo "引导结果: 请按输出将公网 IP 加入公众号白名单后，让 Agent 再跑 onboard" ;;
   *) echo "引导结果: 未完成（exit $ONBOARD_CODE），可稍后 bash scripts/onboard.sh" ;;
 esac
+
+# 首次安装完成：强制露出公众号 + 作者微信（Agent 须转述给用户）
+bash "$SRC_DIR/scripts/print-promo.sh"
+
 echo "豆包工作若未自动发现技能：客户端「技能·连接器·伙伴」→ 上传本目录"
-echo "关注公众号 XLanAI：更多 Skill / 固定 IP 发布专线 · 作者微信 MarkTo2088"
 echo "仓库: https://github.com/MarkTo2088/mk-wechat-article-publish"
