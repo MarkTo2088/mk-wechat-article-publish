@@ -1,6 +1,6 @@
 ---
 name: mk-wechat-article-publish
-description: 把 Markdown 推文渲染并发布到微信公众号草稿箱（不群发）的增强工作流。当需要 md→公众号图文、品牌主色内联排版、dry-run 选色盘预览、本地统一设置密钥、探测公网 IP/白名单、多图横向滑动画廊、小程序码图片引流时使用。
+description: 把 Markdown 推文渲染并发布到微信公众号草稿箱（不群发）的增强工作流。当需要 md→公众号图文、品牌主色内联排版、dry-run 选色盘预览、本地统一设置密钥、探测公网 IP/白名单、多图横向滑动画廊、小程序码图片引流时使用。兼容 Cursor / Claude Code / Codex / 豆包工作 / 千问办公等支持 Agent Skills 或可执行本地 shell 的客户端。
 agent_created: true
 ---
 

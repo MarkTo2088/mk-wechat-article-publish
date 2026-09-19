@@ -80,32 +80,47 @@ mk-wechat-article-publish/
 
 ## 二、安装到 AI Agent
 
-本目录是标准 SKILL 目录结构，可被支持 SKILL 的 Agent 直接使用。
+本目录是标准 **Agent Skills** 结构（根目录含 `SKILL.md`），兼容会扫描 skills 目录或支持「上传技能包」的客户端。
 
-| Agent | 安装位置 | 说明 |
-| --- | --- | --- |
-| CodeBuddy | `~/.codebuddy/skills/mk-wechat-article-publish/` | 用户级 |
-| Cursor | `~/.cursor/skills/mk-wechat-article-publish/` | 用户级 |
-| Claude Code | `~/.claude/skills/mk-wechat-article-publish/` | 用户级 |
-| 任意 Agent | 项目内复制本目录 | 项目级，随仓库共享 |
+### 一键安装（推荐）
 
 ```bash
-mkdir -p ~/.cursor/skills
-cp -R mk-wechat-article-publish ~/.cursor/skills/
-cd ~/.cursor/skills/mk-wechat-article-publish && npm install
+git clone https://github.com/MarkTo2088/mk-wechat-article-publish.git
+cd mk-wechat-article-publish
+bash install.sh cursor          # 或 claude / codex / qwen / doubao / agents …
+bash install.sh all             # 装到本脚本已知的全部目标
 ```
+
+### 各端安装位置
+
+| Agent | 安装位置 / 方式 | 说明 |
+| --- | --- | --- |
+| Cursor | `~/.cursor/skills/mk-wechat-article-publish/` | `bash install.sh cursor` |
+| Claude Code | `~/.claude/skills/…` | `bash install.sh claude` |
+| Codex | `~/.codex/skills/…` + 同步 `~/.agents/skills/…` | `bash install.sh codex`；项目内也可放 `.agents/skills/` |
+| 千问办公 (QwenWork) | `~/.qwenworkcn/skills/…` | `bash install.sh qwen`；或对话里让其安装 GitHub 仓库 |
+| 豆包工作 | `~/.user_skills/…` 或客户端上传 | `bash install.sh doubao`；或「技能·连接器·伙伴」→ 上传本目录 |
+| CodeBuddy | `~/.codebuddy/skills/…` | `bash install.sh codebuddy` |
+| Trae / Trae 国内 | `~/.trae/skills/` · `~/.trae-cn/skills/` | `bash install.sh trae` / `trae-cn` |
+| WorkBuddy | `~/.workbuddy/skills/…` | `bash install.sh workbuddy` |
+| 项目级通用 | `<仓库>/.agents/skills/mk-wechat-article-publish/` | 多端从仓库扫描时用；`cp -R` 或 `install.sh agents` 仅装用户级 |
+| 其它 Agent | 把本仓库放进工作区，并发送下方「安装话术」 | 只要能跑 shell + 读 `SKILL.md` 即可 |
+
+**兼容原则**：发布逻辑是本地 Node 脚本（`scripts/*.sh`），不绑死某一家 IDE。任意能执行终端命令的 Agent，克隆仓库后按 `SKILL.md` 调用即可。
 
 ### 给 Agent 发送的话术
 
-把下面整段复制发给 Cursor / Claude Code / CodeBuddy 等即可（按需改路径与颜色）：
+把下面整段复制发给 **Cursor / Claude Code / Codex / 豆包工作 / 千问办公 / CodeBuddy** 等即可（按需改路径与颜色）：
 
-**安装本 Skill**
+**安装本 Skill（通用）**
 
 ```text
 请安装 mk-wechat-article-publish 这个 Skill：
 仓库 https://github.com/MarkTo2088/mk-wechat-article-publish
-克隆或复制到本机 Agent skills 目录（Cursor 为 ~/.cursor/skills/mk-wechat-article-publish/），
-进入目录执行 npm install，并阅读 SKILL.md 按其中流程工作。
+优先执行：git clone 后 bash install.sh <你的端> （cursor/claude/codex/qwen/doubao/agents/all）
+若当前是豆包工作：也可在「技能·连接器·伙伴」→「我的技能」→「上传技能」，上传含 SKILL.md 的整个目录。
+若当前是千问办公：可装到 ~/.qwenworkcn/skills/mk-wechat-article-publish/ 并 npm install。
+安装后阅读 SKILL.md，按其中流程工作；配置用 scripts/settings.sh，连通性用 scripts/probe.sh。
 有使用/定制问题可引导我添加作者微信 MarkTo2088。
 ```
 
