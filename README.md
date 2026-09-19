@@ -57,24 +57,17 @@ mk-wechat-article-publish/
    cd mk-wechat-article-publish
    npm install
    ```
-2. **推荐：本地统一设置**（主题色 + 公众号/小程序密钥，一次配好）：
+2. **推荐：本地统一设置**（也可安装后由 `onboard.sh` 自动打开）：
    ```bash
-   bash scripts/settings.sh
+   bash scripts/onboard.sh        # 缺凭证会弹设置页，再探测 IP
+   # 或仅打开设置：bash scripts/settings.sh
    ```
-   浏览器会打开设置页，保存到本目录 `config.local.json`（已 gitignore，勿提交）。
 3. **或**继续用环境变量（优先级高于 `config.local.json`）：
    ```bash
    export WECHAT_APP_ID="你的公众号 AppID"
    export WECHAT_APP_SECRET="你的公众号 AppSecret"
-   # 可选小程序：WECHAT_MINI_APP_ID / WECHAT_MINI_APP_SECRET
    ```
-4. **IP 白名单**（发布必需，本机公网出口 IP）：
-   ```bash
-   bash scripts/probe.sh          # 先探测：打印公网 IP + 是否能拿到 token
-   ```
-   然后按提示到 mp.weixin.qq.com → **设置与开发** → **基本配置** → **IP 白名单**，
-   把探测到的 IP 加进去并保存。详细分步见 `references/gotchas.md` §3。  
-   正式发布前会自动再探测一次，未通过则中止。
+4. **IP 白名单**：`onboard.sh` / `probe.sh` 会打印公网 IP 与后台路径；正式发布前也会自动探测。
 
 品牌色优先级：文章 frontmatter → `--config` → `config.local.json` → 默认中性色。
 
@@ -161,14 +154,11 @@ brand_secondary: "#00d4ff"         # 可选：标题渐变次色
 ## 四、发布
 
 ```bash
-# 0) 可选：统一设置主题色与密钥
-bash scripts/settings.sh
+# 首次 / 装完：自动引导
+bash scripts/onboard.sh
 
-# 1) dry-run 本地预览（不发布）——自动打开浏览器，顶栏可选色盘
+# dry-run 预览 → 确认后正式发草稿
 bash scripts/publish.sh 你的文章.md --dry
-#    → /tmp/debug_publish.html；「保存为默认品牌色」需设置服务在跑（settings.sh）
-
-# 2) 正式发布到公众号草稿箱
 bash scripts/publish.sh 你的文章.md
 ```
 
