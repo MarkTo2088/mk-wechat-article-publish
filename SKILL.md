@@ -2,7 +2,7 @@
 name: mk-wechat-article-publish
 description: >-
   协助撰写微信公众号图文，并发布到草稿箱（不群发）。用户说「帮我写公众号」「发草稿」
-  「改稿」、给出对标链接，或给出选题、素材、已有文章时使用。稿件内部用 Markdown，不是把转换本身当产品。
+  「改稿」、给出参考文章链接，或给出选题、素材、已有文章时使用。稿件内部用 Markdown，不是把转换本身当产品。
   品牌色可手动设置或按描述生成。兼容 Cursor / Claude / Codex / 豆包工作 / 千问办公等。
   首次使用请先完成 onboard（凭证与 IP 白名单）。
 agent_created: true
@@ -33,12 +33,15 @@ agent_created: true
    - 用户确认发草稿后，再执行不带 `--dry` 的发布  
    - 未确认不要发布
 
-3. **用户给出对标链接（要参考某篇公众号的排版）**  
-   - 执行：`bash scripts/extract-layout.sh "<链接>"`  
-   - 阅读输出的排版要点，以及工作空间 `.mk-wechat-publish/layout-ref.json` 里的 `agentBrief`  
-   - 之后写稿按这些要点：标题节奏、引用、图文、字号感。**不要复制对标文的句子、标题或图片**  
-   - 若识别出主色，先问用户是否写入品牌色，同意再 `set-brand.sh`  
-   - 链接被微信拦截时，让用户把页面另存为 HTML，再 `bash scripts/extract-layout.sh --file page.html`
+3. **用户给出参考文章链接（要学它的写法来写自己的稿）**  
+   - 执行：`bash scripts/learn-reference.sh "<链接>"`  
+   - 读工作空间 `.mk-wechat-publish/style-template.md`：说话方式、视觉排版、图文节奏都在里面  
+   - **立刻打开** `.mk-wechat-publish/style-ref/images/` 里的参考图，看完后把「图片风格」补进 `style-template.md`（摄影还是插画、色调、构图、有没有人物、字是否压在图上）  
+   - 用几句话向用户复述这套模板，再按它写用户自己的选题  
+   - 生图时把图片风格写进提示词，并要求无水印、无角标、无 logo  
+   - **不要**复制参考文的句子和标题，**不要**把参考图放进新稿  
+   - 只要排版、不学文风时，才用 `bash scripts/extract-layout.sh`  
+   - 链接被微信拦截时，让用户另存 HTML，再 `bash scripts/learn-reference.sh --file page.html`
 
 4. **素材水印（生图之后、发布之前，必须做）**  
    - 助手自己生图时，提示词写明：无水印、无角标、无 logo、无签名、无「AI生成」字样  
@@ -72,7 +75,8 @@ agent_created: true
 - **没有封面**：先问用户要哪张图，或在稿里标明「封面待补」，不要假装已有图就去发布。  
 - 先在对话里给出标题和正文供确认；用户说改哪里就改，同意后再预览、再发布。  
 - 不要在正文里嵌 `<mp-miniprogram>`（会触发小绿书字数限制，见 `references/gotchas.md`）。  
-- 若工作空间已有 `.mk-wechat-publish/layout-ref.json`，写稿时遵守其中 `agentBrief`，只学排版不抄原文。  
+- 若工作空间已有 `.mk-wechat-publish/style-template.md`，写稿按其中的说话方式、排版和图片风格，只写用户自己的内容。  
+- 若只有 `.mk-wechat-publish/layout-ref.json`，至少遵守其中的排版要点。  
 - 生图提示词写明无水印、无角标、无 logo。发出去之前必须逐张看图，有水印就换掉或裁掉边角小标，再 `verify-assets.sh --ok`。
 
 ## 品牌色约定（给助手）
@@ -114,7 +118,8 @@ bash install.sh cursor|claude|codex|qwen|doubao|agents|all
 | `scripts/onboard.sh` | 首次引导：打开设置页并探测连通性 |
 | `scripts/settings.sh` | 打开设置页（手动改色 / 密钥） |
 | `scripts/set-brand.sh` | 写入品牌色（Agent 按描述生成后调用） |
-| `scripts/extract-layout.sh` | 从对标链接提炼排版参考（不保存正文） |
+| `scripts/learn-reference.sh` | 从参考链接提炼说话方式、排版和图片风格模板 |
+| `scripts/extract-layout.sh` | 只提炼排版（不学文风） |
 | `scripts/verify-assets.sh` | 核验配图无水印；`--ok` 记入台账后才允许正式发布 |
 | `scripts/crop-badge.py` | 裁掉自己生图的边角小标（裁完须重新核验） |
 | `scripts/probe.sh` | 探测公网 IP / 白名单（正式发布前也会自动执行） |

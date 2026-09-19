@@ -69,7 +69,7 @@ AppID 仍可在公众平台「设置与开发 → 账号设置 → 账号详情�
 
 ## 3.4 对标链接
 
-`bash scripts/extract-layout.sh <公众号文章链接>` 只提炼排版（配色、标题块、引用、画廊），写入工作空间 `.mk-wechat-publish/layout-ref.json`，**不保存正文**。微信若返回拦截页，把网页另存为 HTML 后加 `--file`。
+`bash scripts/learn-reference.sh <公众号文章链接>` 提炼说话方式、排版和图片观察素材，写入 `.mk-wechat-publish/style-template.md`。只学手法，不保存正文，参考图不能直接用到新文章里。只要排版时用 `extract-layout.sh`。微信若返回拦截页，把网页另存为 HTML 后加 `--file`。
 
 ## 3.5 配图水印
 
