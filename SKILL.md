@@ -1,10 +1,10 @@
 ---
 name: mk-wechat-article-publish
-description: 把 Markdown 推文渲染并发布到微信公众号草稿箱（不群发）的增强工作流。当需要 md→公众号图文、品牌主色内联排版、多图横向滑动画廊、小程序码图片引流、发布前 dry-run 校验时使用。自建 Markdown 渲染与微信草稿 API，不依赖 wenyan。
+description: 把 Markdown 推文渲染并发布到微信公众号草稿箱（不群发）的增强工作流。当需要 md→公众号图文、品牌主色内联排版、多图横向滑动画廊、小程序码图片引流、发布前 dry-run 校验时使用。
 agent_created: true
 ---
 
-# Markdown → 公众号图文草稿（自建发布）
+# Markdown → 公众号图文草稿
 
 ## 适用场景
 

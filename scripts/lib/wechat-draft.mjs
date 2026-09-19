@@ -1,4 +1,4 @@
-// scripts/lib/wechat-draft.mjs — 微信公众号草稿箱 API（自建，无 wenyan）
+// scripts/lib/wechat-draft.mjs — 微信公众号草稿箱 API
 import fs from 'fs';
 import path from 'path';
 import FormData from 'form-data';

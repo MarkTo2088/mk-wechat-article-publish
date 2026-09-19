@@ -66,4 +66,3 @@ done
 
 - 需要 **Node ≥ 20.19**（推荐 22 LTS）
 - 首次在 skill 目录执行 `npm install`；之后 `publish.sh` 会检测 `node_modules`
-- 本 skill **不再依赖** `@wenyan-md/cli` / 全局 `wenyan` 命令

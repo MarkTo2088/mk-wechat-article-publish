@@ -1,5 +1,5 @@
 #!/bin/bash
-# publish.sh - 公众号图文增强发布入口（自建渲染 + 草稿 API，无 wenyan）
+# publish.sh - 公众号图文增强发布入口（Markdown 渲染 + 草稿 API）
 # 用法: bash scripts/publish.sh <文章.md> [--dry] [--config <config.json>]
 #
 # 文章路径会先转为绝对路径，因此可从任意目录调用。

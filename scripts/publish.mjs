@@ -1,4 +1,4 @@
-// publish.mjs - 公众号图文增强发布（自建渲染 + 草稿 API，无 wenyan）
+// publish.mjs - 公众号图文增强发布（Markdown 渲染 + 草稿 API）
 // 用法: node scripts/publish.mjs <文章.md> [--dry] [--config <config.json>]
 // 推荐入口: bash scripts/publish.sh <文章.md> [...]
 //

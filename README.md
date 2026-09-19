@@ -2,8 +2,7 @@
 
 把 Markdown 一键渲染成 **微信公众号图文草稿**（发布到草稿箱，不群发）的 Agent Skill。
 
-**自建** Markdown 内联排版 + 微信草稿 API，**不依赖 wenyan**。三类可选增强全部通过文章
-`frontmatter` / 配置声明：
+Markdown 内联排版 + 微信草稿 API。三类可选增强全部通过文章 `frontmatter` / 配置声明：
 
 | 能力 | 说明 | 是否可选 |
 | --- | --- | --- |
