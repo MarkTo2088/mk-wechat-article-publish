@@ -100,8 +100,10 @@
   <div class="actions">
     <button type="button" class="primary" id="btnSave">保存</button>
     <button type="button" class="ghost" id="btnReload">重新加载</button>
+    <button type="button" class="ghost" id="btnProbe">探测 IP / 白名单</button>
   </div>
-  <p class="warn">密钥仅存本机，请勿把 config.local.json 提交到 Git 或发给他人。</p>
+  <p class="warn">密钥仅存本机，请勿把 config.local.json 提交到 Git 或发给他人。发布走本机公网 IP，须加入公众号「IP 白名单」。</p>
+  <pre id="probeOut" style="display:none;white-space:pre-wrap;background:#12151a;border:1px solid var(--border);border-radius:8px;padding:12px;font-size:0.8rem;line-height:1.45;color:var(--muted);margin-top:12px;"></pre>
   <p id="msg"></p>
   <p class="path" id="cfgPath"></p>
 </main>
@@ -161,6 +163,22 @@
   }
 
   $('btnReload').addEventListener('click', () => load().catch((e) => setMsg(String(e), false)));
+  $('btnProbe').addEventListener('click', async () => {
+    const out = $('probeOut');
+    out.style.display = 'block';
+    out.textContent = '探测中…';
+    setMsg('正在探测公网 IP 与微信连通性…');
+    try {
+      const res = await fetch('/api/probe');
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || '探测失败');
+      out.textContent = data.text || JSON.stringify(data, null, 2);
+      setMsg(data.ok ? '探测通过，可以发布' : '探测未通过，请按下方步骤设置 IP 白名单', data.ok);
+    } catch (e) {
+      out.textContent = String(e.message || e);
+      setMsg(String(e.message || e), false);
+    }
+  });
   $('btnSave').addEventListener('click', async () => {
     const body = {
       brand: {

@@ -10,6 +10,7 @@ import { renderMarkdown } from './lib/render.mjs';
 import { publishToWechatDraft } from './lib/wechat-draft.mjs';
 import { loadLocalConfig } from './lib/local-config.mjs';
 import { wrapDryPreview } from './lib/dry-preview.mjs';
+import { runProbe, formatProbeReport } from './lib/probe.mjs';
 
 const argv = process.argv.slice(2);
 const DRY = argv.includes('--dry');
@@ -126,6 +127,14 @@ const APP_SECRET = process.env.WECHAT_APP_SECRET || local.wechat.appSecret;
 if (!APP_ID || !APP_SECRET) {
   console.error('缺少公众号凭证：请设置 WECHAT_APP_ID / WECHAT_APP_SECRET，');
   console.error('或运行 bash scripts/settings.sh 写入 config.local.json。');
+  process.exit(1);
+}
+
+console.log('发布前连通性探测...');
+const probe = await runProbe();
+console.log(formatProbeReport(probe));
+if (!probe.ok) {
+  console.error('\n发布已中止。请按上方步骤配置 IP 白名单后重试，或单独运行: bash scripts/probe.sh');
   process.exit(1);
 }
 

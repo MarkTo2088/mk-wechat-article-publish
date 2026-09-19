@@ -32,12 +32,15 @@ mk-wechat-article-publish/
 │   └── gotchas.md
 ├── scripts/
 │   ├── settings.sh           # 打开设置页（主题色 + 密钥）
+│   ├── probe.sh              # 探测公网 IP / 白名单 / 凭证
 │   ├── publish.sh            # 发布入口
 │   ├── publish.mjs
+│   ├── probe.mjs
 │   ├── lib/
 │   │   ├── local-config.mjs
+│   │   ├── probe.mjs         # IP + token 探测
 │   │   ├── render.mjs
-│   │   ├── dry-preview.mjs   # dry-run 选色盘预览
+│   │   ├── dry-preview.mjs
 │   │   └── wechat-draft.mjs
 │   └── gen_miniprogram_qr.sh
 └── examples/
@@ -63,7 +66,13 @@ mk-wechat-article-publish/
    export WECHAT_APP_SECRET="你的公众号 AppSecret"
    # 可选小程序：WECHAT_MINI_APP_ID / WECHAT_MINI_APP_SECRET
    ```
-4. **IP 白名单**：本机公网出口 IP 加入公众号后台「IP 白名单」，否则发布失败。
+4. **IP 白名单**（发布必需，本机公网出口 IP）：
+   ```bash
+   bash scripts/probe.sh          # 先探测：打印公网 IP + 是否能拿到 token
+   ```
+   然后按提示到 mp.weixin.qq.com → **设置与开发** → **基本配置** → **IP 白名单**，
+   把探测到的 IP 加进去并保存。详细分步见 `references/gotchas.md` §3。  
+   正式发布前会自动再探测一次，未通过则中止。
 
 品牌色优先级：文章 frontmatter → `--config` → `config.local.json` → 默认中性色。
 
@@ -98,6 +107,13 @@ cd ~/.cursor/skills/mk-wechat-article-publish && npm install
 克隆或复制到本机 Agent skills 目录（Cursor 为 ~/.cursor/skills/mk-wechat-article-publish/），
 进入目录执行 npm install，并阅读 SKILL.md 按其中流程工作。
 有使用/定制问题可引导我添加作者微信 MarkTo2088。
+```
+
+**探测 IP 白名单 / 凭证**
+
+```text
+用 mk-wechat-article-publish，运行 bash scripts/probe.sh，
+把探测到的公网 IP 和是否通过告诉我；若未通过，按输出步骤指导我去公众号后台加 IP 白名单。
 ```
 
 **打开设置页（主题色 + 密钥）**
@@ -203,7 +219,8 @@ bash scripts/gen_miniprogram_qr.sh -o app.png --scene promo --page pages/home/in
 
 | 报错 / 现象 | 原因与对策 |
 | --- | --- |
-| `invalid ip ... not in whitelist` | 公网 IP 未加入公众号白名单（见上文） |
+| `invalid ip ... not in whitelist` | 运行 `bash scripts/probe.sh`，按输出把公网 IP 加入后台白名单 |
+| 探测失败但网页能登录公众号 | 与网页无关；API 必须白名单。确认填的是 probe 给出的出口 IP |
 | `45166 内容超长` | 正文内嵌了小绿书模式内容/小程序卡片 → 换小程序码图片、精简正文 |
 | `40066 invalid url rid` | `draft/batchdel` 批量删除偶发网关错 → 用单篇 `draft/delete` |
 | 颜色不是品牌色 | 查 frontmatter / config.local.json / 设置页；dry-run 顶栏可微调 |

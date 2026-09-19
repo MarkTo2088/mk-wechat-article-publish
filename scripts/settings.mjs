@@ -11,6 +11,7 @@ import {
   publicConfigView,
   LOCAL_CONFIG_PATH,
 } from './lib/local-config.mjs';
+import { runProbe, formatProbeReport } from './lib/probe.mjs';
 
 const HOST = '127.0.0.1';
 const SETTINGS_HTML = path.join(SKILL_ROOT, 'assets', 'settings.html');
@@ -101,6 +102,16 @@ const server = http.createServer(async (req, res) => {
       send(res, 200, { ok: true, ...publicConfigView(), path: LOCAL_CONFIG_PATH });
     } catch (e) {
       send(res, 400, { error: e.message || String(e) });
+    }
+    return;
+  }
+
+  if (url.pathname === '/api/probe' && req.method === 'GET') {
+    try {
+      const report = await runProbe();
+      send(res, 200, { ...report, text: formatProbeReport(report) });
+    } catch (e) {
+      send(res, 500, { error: e.message || String(e) });
     }
     return;
   }

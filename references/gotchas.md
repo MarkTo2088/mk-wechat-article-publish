@@ -32,14 +32,36 @@ for id in <media_id列表>; do
 done
 ```
 
-## 3. 凭证与 IP 白名单
+## 3. 凭证与 IP 白名单（分步）
 
-- **公众号**发布凭证 → `WECHAT_APP_ID` / `WECHAT_APP_SECRET`
-  （mp.weixin.qq.com → 设置与开发 → 基本配置 → 公众号开发信息）
-- **小程序**凭证（生成小程序码用，与公众号是**两套**）→ `WECHAT_MINI_APP_ID` /
-  `WECHAT_MINI_APP_SECRET`（同站 → 开发管理 → 开发设置）
-- 本机公网 IP 必须加入公众号后台 **IP 白名单**（设置与开发 → 基本配置 → IP 白名单），
-  否则接口返回 `invalid ip ... not in whitelist`。家用宽带出口 IP 会变，变了要重加。
+发布脚本在**本机**直连 `api.weixin.qq.com`，微信校验的是你的**公网出口 IP**，不是 127.0.0.1。
+
+### 3.1 探测（推荐先跑）
+
+```bash
+bash scripts/probe.sh
+```
+
+会输出：本机公网 IP、凭证是否配置、能否拿到 `access_token`。  
+若白名单未配好，会打印完整设置步骤，并以非 0 退出。  
+设置页里也可点「探测 IP / 白名单」（需 `bash scripts/settings.sh` 开着）。
+
+正式 `publish.sh`（非 `--dry`）发布前会自动跑同一套探测，失败则中止。
+
+### 3.2 在公众号后台加入白名单
+
+1. 浏览器打开 [https://mp.weixin.qq.com](https://mp.weixin.qq.com)，管理员微信扫码登录  
+2. 左侧：**设置与开发** → **基本配置**  
+3. 「公众号开发信息」确认 AppID 与本 skill 配置一致（设置页 / 环境变量）  
+4. 同页找到 **IP 白名单** → **修改** / **设置**  
+5. 填入 `probe.sh` 给出的公网 IP（若报错里有「微信看到的 IP」，以该 IP 为准）并保存  
+6. 等待约 1～5 分钟后再次 `bash scripts/probe.sh`，直到显示 OK  
+
+### 3.3 其它说明
+
+- **公众号**凭证 → `WECHAT_APP_ID` / `WECHAT_APP_SECRET` 或 `config.local.json` 的 `wechat`  
+- **小程序**凭证（生成小程序码，另一套）→ `WECHAT_MINI_APP_*` 或 `mini`  
+- 家用宽带出口 IP 会变；突然出现 `invalid ip ... not in whitelist` 时重新探测并更新白名单  
 
 ## 4. 正文图片必须走 uploadimg
 

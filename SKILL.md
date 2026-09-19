@@ -1,6 +1,6 @@
 ---
 name: mk-wechat-article-publish
-description: 把 Markdown 推文渲染并发布到微信公众号草稿箱（不群发）的增强工作流。当需要 md→公众号图文、品牌主色内联排版、dry-run 选色盘预览、本地统一设置密钥、多图横向滑动画廊、小程序码图片引流时使用。
+description: 把 Markdown 推文渲染并发布到微信公众号草稿箱（不群发）的增强工作流。当需要 md→公众号图文、品牌主色内联排版、dry-run 选色盘预览、本地统一设置密钥、探测公网 IP/白名单、多图横向滑动画廊、小程序码图片引流时使用。
 agent_created: true
 ---
 
@@ -23,23 +23,43 @@ agent_created: true
 - Node.js ≥ 20.19（推荐 22 LTS）
 - 在本 skill 目录执行一次：`npm install`（`publish.sh` / `settings.sh` 也会自动装）
 - 公众号凭证：环境变量 `WECHAT_APP_ID` / `WECHAT_APP_SECRET`，**或** `bash scripts/settings.sh` 写入 `config.local.json`
-- 本机公网 IP 已加入公众号后台 **IP 白名单**
+- **IP 白名单**：本机公网出口 IP 须加入公众号后台；先跑 `bash scripts/probe.sh`（见下方步骤）
 - 可选：小程序凭证（环境变量或设置页 `mini` 字段）
 - 可选：本机 `curl` 与 `python3`（仅小程序码脚本用）
+
+## IP 白名单（必做）
+
+发布从**本机**调用微信 API，不是服务器代理。
+
+```bash
+bash scripts/probe.sh
+```
+
+若失败，按脚本打印的步骤操作（摘要）：
+
+1. 打开 https://mp.weixin.qq.com 扫码登录  
+2. **设置与开发** → **基本配置**  
+3. **IP 白名单** → 修改，填入探测到的公网 IP 并保存  
+4. 等待数分钟后再次 `bash scripts/probe.sh` 直到 OK  
+
+完整说明见 `references/gotchas.md` §3。正式发布前也会自动探测。
 
 ## 快速上手
 
 ```bash
-# 0) 推荐：统一设置主题色 + 密钥（浏览器打开设置页）
+# 0) 推荐：统一设置主题色 + 密钥
 bash scripts/settings.sh
+
+# 0.5) 探测公网 IP / 白名单 / 凭证
+bash scripts/probe.sh
 
 # 1) 文章写法参考 assets/article_template.md
 cp assets/article_template.md 我的文章.md
 
-# 2) dry-run：写 /tmp/debug_publish.html 并尝试打开浏览器；顶栏可选色
+# 2) dry-run
 bash scripts/publish.sh 我的文章.md --dry
 
-# 3) 正式发布到草稿箱
+# 3) 正式发布（会先自动 probe）
 bash scripts/publish.sh 我的文章.md
 ```
 
@@ -73,7 +93,8 @@ bash scripts/publish.sh 我的文章.md
 2. 合并 frontmatter / `--config` / `config.local.json`
 3. `render.mjs` 渲成内联 HTML
 4. `--dry`：`dry-preview.mjs` 包选色盘顶栏 → `/tmp/debug_publish.html` → 尝试 `open`
-5. 正式发布：`wechat-draft.mjs`（token → uploadimg → 封面 → draft/add）
+5. 正式发布前：`probe.mjs` 探测公网 IP + token；失败则中止并打印白名单步骤  
+6. 通过后：`wechat-draft.mjs`（token → uploadimg → 封面 → draft/add）
 
 dry-run「保存为默认品牌色」会 `POST http://127.0.0.1:18765/api/config`，需先开着 `settings.sh`。
 
