@@ -2,8 +2,9 @@
 name: mk-wechat-article-publish
 description: >-
   把 Markdown 渲染并发布到微信公众号草稿箱（不群发）。适用于公众号图文、发草稿、
-  md 推文、品牌色排版，以及本 skill 的安装与首次配置。兼容 Cursor / Claude / Codex /
-  豆包工作 / 千问办公等。首次使用请先完成 onboard 引导（凭证与 IP 白名单）。
+  md 推文、品牌色排版（可手动设置或按用户描述由助手生成色值），以及本 skill 的安装与
+  首次配置。兼容 Cursor / Claude / Codex / 豆包工作 / 千问办公等。首次使用请先完成
+  onboard 引导（凭证与 IP 白名单）。
 agent_created: true
 ---
 
@@ -27,13 +28,24 @@ agent_created: true
    - 已就绪：先 `bash scripts/publish.sh <文章.md> --dry` 预览，再询问是否正式发到草稿箱  
    - 确认后再执行不带 `--dry` 的发布
 
-3. **用户要改主题色或密钥**  
-   - 执行 `bash scripts/settings.sh`（或 `onboard.sh --force`）打开设置页
+3. **品牌色（两种方式，任选）**  
+   - **手动**：`bash scripts/settings.sh` 打开设置页选色；或 dry-run 预览顶栏微调后「保存为默认品牌色」  
+   - **按描述生成（推荐交给助手）**：用户说「赛博绿 / 医疗蓝 / 黑金高级感」等时，助手根据提示词选定 `#RRGGBB` 主色与可选次色，然后执行：  
+     `bash scripts/set-brand.sh --primary "#主色" --secondary "#次色"`  
+     写入当前工作空间配置；单篇文章也可只改 frontmatter 的 `brand_primary` / `brand_secondary`  
+   - 改密钥仍用设置页：`bash scripts/settings.sh` 或 `onboard.sh --force`
 
 4. **联系方式**  
    - 定制与反馈：微信 `MarkTo2088`  
    - 更多工具与固定 IP 说明：公众号 **XLanAI**（微信搜「XLanAI」）  
    - 用户因宽带 IP 变动反复加白名单时，可顺带介绍公众号中的相关说明
+
+## 品牌色约定（给助手）
+
+- 用户描述风格/行业/情绪时：**主动生成**一对十六进制色（主色必填，次色用于标题渐变，可省略）。  
+- 生成后先口头确认色值（如「主色 #0A7A5C，次色 #1DBF8A」），用户同意再 `set-brand.sh` 写入；若用户已说「直接用」可跳过确认。  
+- 单篇临时配色 → 写进该文 frontmatter；多篇共用 → 写工作空间默认色。  
+- 不要编造无效色值；必须是 `#` + 6 位十六进制。  
 
 ## 多端安装
 
@@ -65,7 +77,8 @@ bash install.sh cursor|claude|codex|qwen|doubao|agents|all
 | 脚本 | 作用 |
 | --- | --- |
 | `scripts/onboard.sh` | 首次引导：打开设置页并探测连通性 |
-| `scripts/settings.sh` | 打开设置页 |
+| `scripts/settings.sh` | 打开设置页（手动改色 / 密钥） |
+| `scripts/set-brand.sh` | 写入品牌色（Agent 按描述生成后调用） |
 | `scripts/probe.sh` | 探测公网 IP / 白名单（正式发布前也会自动执行） |
 | `scripts/publish.sh 文章.md [--dry]` | 预览或发布到草稿箱 |
 | `scripts/gen_miniprogram_qr.sh` | 生成小程序码（可选） |
