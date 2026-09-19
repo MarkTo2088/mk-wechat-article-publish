@@ -76,6 +76,7 @@ mk-wechat-article-publish/
 **配置优先级（多公众号）**  
 品牌色：文章 frontmatter → `--config` → **工作空间** `.mk-wechat-publish/config.json` → skill 级 `config.local.json` → 默认  
 凭证：**工作空间** → skill 级 → 环境变量  
+公众号名称写在 `wechat.name`（设置页第一项），发布与探测时会显示，方便核对是哪个号。  
 
 请在项目 `.gitignore` 中加入：
 

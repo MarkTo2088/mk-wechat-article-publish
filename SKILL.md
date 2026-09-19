@@ -54,6 +54,7 @@ bash install.sh cursor|claude|codex|qwen|doubao|agents|all
 
 - **品牌色**：文章 frontmatter → `--config` → **工作空间** → skill 级 `config.local.json` → 默认  
 - **凭证**：工作空间 → skill 级 → 环境变量  
+- 公众号配置含 **名称**（`wechat.name`），用于区分多个号；设置页第一项填写  
 
 ## 文章写法
 

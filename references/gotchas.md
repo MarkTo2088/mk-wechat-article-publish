@@ -59,7 +59,7 @@ bash scripts/probe.sh
 
 ### 3.3 其它说明
 
-- **公众号**凭证 → 工作空间 `.mk-wechat-publish/config.json` 的 `wechat`（优先）/ skill 级 `config.local.json` / `WECHAT_APP_*`  
+- **公众号**凭证 → 工作空间 `.mk-wechat-publish/config.json` 的 `wechat`（`name` 公众号名称、AppID、AppSecret）/ skill 级 `config.local.json` / `WECHAT_ACCOUNT_NAME`、`WECHAT_APP_*`  
 - **小程序**凭证（生成小程序码，另一套）→ 同文件 `mini` 或 `WECHAT_MINI_APP_*`  
 - 家用宽带出口 IP 会变；突然出现 `invalid ip ... not in whitelist` 时重新探测并更新白名单  
 

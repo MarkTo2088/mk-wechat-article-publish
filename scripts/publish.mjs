@@ -49,6 +49,7 @@ function loadJson(p) {
 const resolved = resolveConfig({ startDir: MD_DIR });
 const local = resolved.config;
 console.log('工作空间:', resolved.workspaceRoot);
+console.log('公众号:', local.wechat.name || '（未填写名称）');
 console.log(
   '配置来源:',
   resolved.hasWorkspaceConfig

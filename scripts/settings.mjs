@@ -65,6 +65,7 @@ function mergeSave(body) {
       image_width: body.gallery?.image_width ?? cur.gallery.image_width,
     },
     wechat: {
+      name: body.wechat?.name !== undefined ? body.wechat.name : cur.wechat.name,
       appId: body.wechat?.appId !== undefined ? body.wechat.appId : cur.wechat.appId,
     },
     mini: {

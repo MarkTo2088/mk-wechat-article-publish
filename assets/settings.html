@@ -76,6 +76,10 @@
   <section>
     <h2>公众号凭证（发布草稿）</h2>
     <div class="row">
+      <label>公众号名称</label>
+      <input type="text" id="wechatName" autocomplete="off" placeholder="例如：XLanAI，便于区分多个号" />
+    </div>
+    <div class="row">
       <label>AppID</label>
       <input type="text" id="wechatAppId" autocomplete="off" placeholder="wx..." />
     </div>
@@ -149,6 +153,7 @@
     $('secondaryHex').value = s;
     $('secondaryColor').value = s;
     $('galleryWidth').value = data.gallery?.image_width || 62;
+    $('wechatName').value = data.wechat?.name || '';
     $('wechatAppId').value = data.wechat?.appId || '';
     $('wechatAppSecret').value = '';
     $('wechatAppSecret').placeholder = data.wechat?.hasSecret
@@ -192,6 +197,7 @@
       },
       gallery: { image_width: Number($('galleryWidth').value) || 62 },
       wechat: {
+        name: $('wechatName').value.trim(),
         appId: $('wechatAppId').value.trim(),
         appSecret: $('wechatAppSecret').value,
       },

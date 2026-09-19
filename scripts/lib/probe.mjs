@@ -120,6 +120,7 @@ export async function runProbe(opts = {}) {
     publicIpSource: publicIp.source,
     publicIpErrors: publicIp.errors || [],
     hasCredentials: Boolean(appId && appSecret),
+    accountName: local.wechat.name || '',
     appIdMasked: appId ? `${appId.slice(0, 6)}…` : '',
     wechat: token,
     effectiveIp,
@@ -152,6 +153,9 @@ export function formatProbeReport(report) {
   if (!report.publicIp && report.publicIpErrors?.length) {
     lines.push('  IP 探测失败细节: ' + report.publicIpErrors.join(' | '));
   }
+  lines.push(
+    `公众号: ${report.accountName || '（未填写名称）'}`
+  );
   lines.push(
     `公众号凭证: ${report.hasCredentials ? `已配置（${report.appIdMasked}）` : '未配置'}`
   );

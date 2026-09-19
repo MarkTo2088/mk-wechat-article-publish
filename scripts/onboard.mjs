@@ -57,7 +57,8 @@ console.log(
     : resolved.hasSkillConfig
       ? 'skill 级配置'
       : '环境变量',
-  '）'
+  '）',
+  cfg.wechat.name ? `· ${cfg.wechat.name}` : ''
 );
 console.log('正在探测连通性…');
 const report = await runProbe({ startDir: START_DIR });

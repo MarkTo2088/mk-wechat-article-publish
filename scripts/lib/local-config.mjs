@@ -22,7 +22,7 @@ export const SETTINGS_PORT = 18765;
 export const EMPTY_CONFIG = {
   brand: { primary: '', secondary: '' },
   gallery: { image_width: 62 },
-  wechat: { appId: '', appSecret: '' },
+  wechat: { name: '', appId: '', appSecret: '' },
   mini: { appId: '', appSecret: '' },
 };
 
@@ -44,6 +44,7 @@ function normalizeConfig(raw) {
       image_width: Number(raw?.gallery?.image_width) || 62,
     },
     wechat: {
+      name: raw?.wechat?.name || '',
       appId: raw?.wechat?.appId || '',
       appSecret: raw?.wechat?.appSecret || '',
     },
@@ -113,6 +114,7 @@ function mergeLayer(base, over) {
       image_width: o.gallery.image_width || b.gallery.image_width || 62,
     },
     wechat: {
+      name: nonEmpty(o.wechat.name) ? o.wechat.name : b.wechat.name,
       appId: nonEmpty(o.wechat.appId) ? o.wechat.appId : b.wechat.appId,
       appSecret: nonEmpty(o.wechat.appSecret)
         ? o.wechat.appSecret
@@ -132,6 +134,7 @@ function envCredentials() {
     brand: { primary: '', secondary: '' },
     gallery: { image_width: 62 },
     wechat: {
+      name: process.env.WECHAT_ACCOUNT_NAME || '',
       appId: process.env.WECHAT_APP_ID || '',
       appSecret: process.env.WECHAT_APP_SECRET || '',
     },
@@ -235,6 +238,7 @@ export function publicConfigView(startDir) {
     brand: { ...cfg.brand },
     gallery: { ...cfg.gallery },
     wechat: {
+      name: cfg.wechat.name || '',
       appId: cfg.wechat.appId || '',
       appSecret: cfg.wechat.appSecret ? '••••••••' : '',
       hasSecret: Boolean(cfg.wechat.appSecret),
