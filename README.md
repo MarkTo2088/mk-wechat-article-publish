@@ -102,9 +102,9 @@ bash install.sh all             # 装到本脚本已知的全部目标
 | Trae / Trae 国内 | `~/.trae/skills/` · `~/.trae-cn/skills/` | `bash install.sh trae` / `trae-cn` |
 | WorkBuddy | `~/.workbuddy/skills/…` | `bash install.sh workbuddy` |
 | 项目级通用 | `<仓库>/.agents/skills/mk-wechat-article-publish/` | 多端从仓库扫描时用；`cp -R` 或 `install.sh agents` 仅装用户级 |
-| 其它 Agent | 把本仓库放进工作区，并发送下方「安装话术」 | 只要能跑 shell + 读 `SKILL.md` 即可 |
+| 其它助手 | 将本仓库放入工作区，并发送下方安装说明 | 能执行终端命令并阅读 `SKILL.md` 即可 |
 
-**兼容原则**：发布逻辑是本地 Node 脚本（`scripts/*.sh`），不绑死某一家 IDE。任意能执行终端命令的 Agent，克隆仓库后按 `SKILL.md` 调用即可。
+**说明**：发布在本机执行脚本完成，不绑定某一款 IDE。也可不经助手，直接按本文命令使用。
 
 ### 给助手发送的安装说明
 
