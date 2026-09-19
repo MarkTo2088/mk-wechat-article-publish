@@ -3,6 +3,7 @@
 .env.*
 !.env.example
 config.local.json
+.mk-wechat-publish/
 
 # 本地产物
 *.zip

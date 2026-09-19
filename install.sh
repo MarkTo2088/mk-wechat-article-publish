@@ -50,6 +50,7 @@ install_one() {
       --exclude node_modules \
       --exclude .git \
       --exclude config.local.json \
+      --exclude .mk-wechat-publish \
       --exclude '.env' \
       --exclude '.env.*' \
       "$SRC_DIR"/ "$dest"/
@@ -57,6 +58,7 @@ install_one() {
     mkdir -p "$dest"
     tar -C "$SRC_DIR" \
       --exclude=node_modules --exclude=.git --exclude=config.local.json \
+      --exclude=.mk-wechat-publish \
       --exclude='.env' --exclude='.env.*' \
       -cf - . | tar -C "$dest" -xf -
   fi
@@ -70,12 +72,14 @@ install_one() {
       mkdir -p "$agents_dest"
       rsync -a --delete \
         --exclude node_modules --exclude .git --exclude config.local.json \
+        --exclude .mk-wechat-publish \
         --exclude '.env' --exclude '.env.*' \
         "$SRC_DIR"/ "$agents_dest"/
     else
       mkdir -p "$agents_dest"
       tar -C "$SRC_DIR" \
         --exclude=node_modules --exclude=.git --exclude=config.local.json \
+        --exclude=.mk-wechat-publish \
         --exclude='.env' --exclude='.env.*' \
         -cf - . | tar -C "$agents_dest" -xf -
     fi

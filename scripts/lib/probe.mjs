@@ -1,5 +1,5 @@
 // scripts/lib/probe.mjs — 探测本机公网 IP + 公众号 API / 白名单是否可用
-import { loadLocalConfig } from './local-config.mjs';
+import { resolveConfig } from './local-config.mjs';
 
 const IP_ENDPOINTS = [
   'https://api.ipify.org',
@@ -49,7 +49,7 @@ export async function probeWechatToken(appId, appSecret) {
     return {
       ok: false,
       reason: 'missing_credentials',
-      message: '缺少公众号 AppID / AppSecret（环境变量或 config.local.json）',
+      message: '缺少公众号 AppID / AppSecret（请在工作空间配置或设置页填写）',
     };
   }
   const url =
@@ -104,10 +104,12 @@ export function whitelistSteps(ip) {
 /**
  * 完整探测报告（供 CLI / 设置页 API）
  */
-export async function runProbe() {
-  const local = loadLocalConfig();
-  const appId = process.env.WECHAT_APP_ID || local.wechat.appId;
-  const appSecret = process.env.WECHAT_APP_SECRET || local.wechat.appSecret;
+export async function runProbe(opts = {}) {
+  const startDir = opts.startDir || process.cwd();
+  const resolved = resolveConfig({ startDir });
+  const local = resolved.config;
+  const appId = local.wechat.appId;
+  const appSecret = local.wechat.appSecret;
 
   const publicIp = await detectPublicIp();
   const token = await probeWechatToken(appId, appSecret);
@@ -123,6 +125,12 @@ export async function runProbe() {
     effectiveIp,
     steps: whitelistSteps(effectiveIp),
     ok: token.ok,
+    workspaceRoot: resolved.workspaceRoot,
+    configPath: resolved.hasWorkspaceConfig
+      ? resolved.workspaceConfigPath
+      : resolved.hasSkillConfig
+        ? resolved.skillConfigPath
+        : resolved.workspaceConfigPath,
   };
 }
 
@@ -130,6 +138,12 @@ export async function runProbe() {
 export function formatProbeReport(report) {
   const lines = [];
   lines.push('=== 公众号发布连通性探测 ===');
+  if (report.workspaceRoot) {
+    lines.push(`工作空间: ${report.workspaceRoot}`);
+  }
+  if (report.configPath) {
+    lines.push(`配置文件: ${report.configPath}`);
+  }
   lines.push(
     `本机公网出口 IP: ${report.publicIp || '（未能探测）'}${
       report.publicIpSource ? `  ← ${report.publicIpSource}` : ''

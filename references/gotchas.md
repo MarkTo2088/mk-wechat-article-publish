@@ -59,8 +59,8 @@ bash scripts/probe.sh
 
 ### 3.3 其它说明
 
-- **公众号**凭证 → `WECHAT_APP_ID` / `WECHAT_APP_SECRET` 或 `config.local.json` 的 `wechat`  
-- **小程序**凭证（生成小程序码，另一套）→ `WECHAT_MINI_APP_*` 或 `mini`  
+- **公众号**凭证 → 工作空间 `.mk-wechat-publish/config.json` 的 `wechat`（优先）/ skill 级 `config.local.json` / `WECHAT_APP_*`  
+- **小程序**凭证（生成小程序码，另一套）→ 同文件 `mini` 或 `WECHAT_MINI_APP_*`  
 - 家用宽带出口 IP 会变；突然出现 `invalid ip ... not in whitelist` 时重新探测并更新白名单  
 
 ## 4. 正文图片必须走 uploadimg
@@ -89,8 +89,12 @@ bash scripts/probe.sh
 - 需要 **Node ≥ 20.19**（推荐 22 LTS）
 - 首次在 skill 目录执行 `npm install`；之后 `publish.sh` / `settings.sh` 会检测 `node_modules`
 
-## 8. 本地配置 config.local.json
+## 8. 本地配置（多公众号 / 跟工作空间）
 
-- 由 `bash scripts/settings.sh` 写入，含品牌色与密钥；**勿提交 git**
-- 发布时环境变量优先于该文件
-- dry-run 顶栏「保存为默认品牌色」依赖本机 `127.0.0.1:18765` 设置服务正在运行
+- **工作空间（优先）**：`<项目根>/.mk-wechat-publish/config.json`  
+  由设置页 / onboard 默认写入；不同项目可对接不同公众号。  
+- **skill 级（兜底）**：skill 目录下 `config.local.json`（跨项目默认）。  
+- **环境变量（最低）**：`WECHAT_APP_ID` / `WECHAT_APP_SECRET` 等。  
+- 发布时以**文章所在目录**向上解析工作空间。  
+- 请将 `.mk-wechat-publish/` 加入项目 `.gitignore`，勿提交密钥。  
+- 若需强制写入 skill 级：`MK_WECHAT_CONFIG_SCOPE=skill bash scripts/settings.sh`

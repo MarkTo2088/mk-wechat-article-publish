@@ -46,13 +46,14 @@ bash install.sh cursor|claude|codex|qwen|doubao|agents|all
 ## 前置
 
 - Node.js ≥ 20.19  
-- 凭证与 IP：由 `onboard.sh` / 设置页引导，不必事先手写环境变量（也可用 env，优先于 `config.local.json`）  
-- `config.local.json` 已 gitignore，禁止提交  
+- 凭证与 IP：由 `onboard.sh` / 设置页写入**当前工作空间** `.mk-wechat-publish/config.json`  
+- 多公众号：每个项目/工作空间各自一份配置；工作空间优先级最高  
+- 请勿提交含密钥的配置；项目 `.gitignore` 建议加入 `.mk-wechat-publish/`  
 
 ## 配置优先级
 
-- 品牌色：frontmatter → `--config` → `config.local.json` → 默认中性色  
-- 凭证：环境变量 → `config.local.json`
+- **品牌色**：文章 frontmatter → `--config` → **工作空间** → skill 级 `config.local.json` → 默认  
+- **凭证**：工作空间 → skill 级 → 环境变量  
 
 ## 文章写法
 

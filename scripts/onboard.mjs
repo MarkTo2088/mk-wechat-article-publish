@@ -1,10 +1,9 @@
-// scripts/onboard.mjs — 安装后 / 首次使用：自动开设置页 + 探测，引导到可发布状态
+// scripts/onboard.mjs — 首次引导：配置写入工作空间，工作空间优先
 import { spawn } from 'child_process';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import {
-  loadLocalConfig,
-  LOCAL_CONFIG_PATH,
+  resolveConfig,
   SETTINGS_PORT,
   SKILL_ROOT,
 } from './lib/local-config.mjs';
@@ -12,17 +11,17 @@ import { runProbe, formatProbeReport } from './lib/probe.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const FORCE = process.argv.includes('--force');
+const START_DIR = process.env.MK_WECHAT_START_DIR || process.cwd();
 
 function hasWechatCreds(cfg) {
-  const id = process.env.WECHAT_APP_ID || cfg.wechat.appId;
-  const secret = process.env.WECHAT_APP_SECRET || cfg.wechat.appSecret;
-  return Boolean(id && secret);
+  return Boolean(cfg.wechat.appId && cfg.wechat.appSecret);
 }
 
 function openSettingsServer() {
   const settingsJs = path.join(__dirname, 'settings.mjs');
   const child = spawn(process.execPath, [settingsJs], {
     cwd: SKILL_ROOT,
+    env: { ...process.env, MK_WECHAT_START_DIR: START_DIR },
     detached: true,
     stdio: 'ignore',
   });
@@ -30,28 +29,38 @@ function openSettingsServer() {
   return `http://127.0.0.1:${SETTINGS_PORT}/`;
 }
 
-const cfg = loadLocalConfig();
+const resolved = resolveConfig({ startDir: START_DIR });
+const cfg = resolved.config;
 const needSettings = FORCE || !hasWechatCreds(cfg);
 
 console.log('=== mk-wechat-article-publish 引导 ===');
-console.log(`配置文件: ${LOCAL_CONFIG_PATH}`);
+console.log(`工作空间: ${resolved.workspaceRoot}`);
+console.log(`写入目标: ${resolved.writePath}`);
+console.log('优先级: 工作空间 > skill 级 config.local.json > 环境变量');
 
-let settingsUrl = null;
 if (needSettings) {
-  settingsUrl = openSettingsServer();
+  const settingsUrl = openSettingsServer();
   console.log('');
-  console.log('【需要配置】公众号 AppID / AppSecret 尚未就绪。');
+  console.log('【需要配置】当前工作空间尚未配置公众号 AppID / AppSecret。');
   console.log(`已打开设置页: ${settingsUrl}`);
-  console.log('请在浏览器中填写：品牌色（可选）+ 公众号 AppID/AppSecret，点保存。');
+  console.log('请在浏览器中填写后保存（默认写入本工作空间，便于多公众号分项目使用）。');
   console.log('保存完成后回到对话说一声「已保存」，或再次运行: bash scripts/onboard.sh');
   console.log('');
   console.log('STATUS=NEED_SETTINGS');
   process.exit(2);
 }
 
-console.log('凭证: 已检测到（环境变量或 config.local.json）');
+console.log(
+  '凭证: 已检测到（',
+  resolved.hasWorkspaceConfig
+    ? '工作空间配置'
+    : resolved.hasSkillConfig
+      ? 'skill 级配置'
+      : '环境变量',
+  '）'
+);
 console.log('正在探测连通性…');
-const report = await runProbe();
+const report = await runProbe({ startDir: START_DIR });
 console.log(formatProbeReport(report));
 
 if (!report.ok) {

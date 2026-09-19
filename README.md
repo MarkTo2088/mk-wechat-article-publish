@@ -9,7 +9,7 @@
 | 品牌色 | 标题/加粗/表头/引用边框使用品牌主色；预览页顶栏可选色 | 可选 |
 | 横向滑动画廊 | 多图左右滑动浏览 | 可选 |
 | 小程序码 | 生成小程序码图片，方便读者长按进入小程序 | 可选 |
-| 本地统一设置 | 主题色与公众号/小程序凭证写入本机 `config.local.json` | 推荐 |
+| 本地统一设置 | 主题色与凭证写入工作空间 `.mk-wechat-publish/`（多公众号分项目） | 推荐 |
 
 > 文章只会进入公众号**草稿箱**，需你在后台确认后再群发——本工具不会自动群发。
 
@@ -27,7 +27,8 @@ mk-wechat-article-publish/
 ├── README.md                 # 本文件
 ├── install.sh                # 多端一键安装（cursor/codex/qwen/doubao/…）
 ├── package.json
-├── config.local.example.json # 本地配置示例（复制为 config.local.json）
+├── config.local.example.json # skill 级兜底配置示例（复制为 config.local.json）
+│                             # 实际优先用各项目 .mk-wechat-publish/config.json
 ├── assets/
 │   ├── article_template.md
 │   └── settings.html         # 统一设置页 UI
@@ -65,14 +66,22 @@ mk-wechat-article-publish/
    bash scripts/onboard.sh        # 缺凭证会弹设置页，再探测 IP
    # 或仅打开设置：bash scripts/settings.sh
    ```
-3. **或**继续用环境变量（优先级高于 `config.local.json`）：
+3. **或**使用环境变量（优先级低于工作空间配置，适合临时覆盖）：
    ```bash
    export WECHAT_APP_ID="你的公众号 AppID"
    export WECHAT_APP_SECRET="你的公众号 AppSecret"
    ```
-4. **IP 白名单**：`onboard.sh` / `probe.sh` 会打印公网 IP 与后台路径；正式发布前也会自动探测。
+4. **IP 白名单**：每个公众号各自配置；`onboard.sh` / `probe.sh` 会打印公网 IP。
 
-品牌色优先级：文章 frontmatter → `--config` → `config.local.json` → 默认中性色。
+**配置优先级（多公众号）**  
+品牌色：文章 frontmatter → `--config` → **工作空间** `.mk-wechat-publish/config.json` → skill 级 `config.local.json` → 默认  
+凭证：**工作空间** → skill 级 → 环境变量  
+
+请在项目 `.gitignore` 中加入：
+
+```gitignore
+.mk-wechat-publish/
+```
 
 ---
 
@@ -149,8 +158,8 @@ brand_secondary: "#00d4ff"         # 可选：标题渐变次色
 
 **要点**：
 - 图片用**相对文章所在目录**的路径，最稳
-- 品牌色：frontmatter > `--config` > `config.local.json`（设置页）> 默认中性色
-- 多篇共用品牌色：跑一次 `bash scripts/settings.sh`，或 `--config config.json`
+- 品牌色：frontmatter > `--config` > 工作空间配置 > skill 级 > 默认
+- 多篇共用：在本工作空间跑一次设置页即可；换项目即换公众号配置
 
 ---
 
@@ -190,10 +199,11 @@ bash scripts/gen_miniprogram_qr.sh -o app.png --scene promo --page pages/home/in
 | 探测失败但网页能登录公众号 | 与网页无关；API 必须白名单。确认填的是 probe 给出的出口 IP |
 | `45166 内容超长` | 正文内嵌了小绿书模式内容/小程序卡片 → 换小程序码图片、精简正文 |
 | `40066 invalid url rid` | `draft/batchdel` 批量删除偶发网关错 → 用单篇 `draft/delete` |
-| 颜色不是品牌色 | 查 frontmatter / config.local.json / 设置页；dry-run 顶栏可微调 |
+| 颜色不是品牌色 | 查 frontmatter / 工作空间配置 / 设置页；dry-run 顶栏可微调 |
 | dry 保存默认色失败 | 先 `bash scripts/settings.sh` 保持设置服务运行 |
 | 缺少依赖 | 在 skill 目录执行 `npm install` |
-| 缺少凭证 | 环境变量或 `bash scripts/settings.sh` 写入 config.local.json |
+| 缺少凭证 | 在对应工作空间运行 `bash scripts/settings.sh` / `onboard.sh` |
+| 配错公众号 | 确认当前目录所属工作空间；配置在 `.mk-wechat-publish/config.json` |
 
 完整踩坑记录见 `references/gotchas.md`。
 

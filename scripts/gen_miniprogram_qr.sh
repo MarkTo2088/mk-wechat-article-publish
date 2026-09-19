@@ -30,17 +30,24 @@ done
 
 if [ -z "$WECHAT_MINI_APP_ID" ] || [ -z "$WECHAT_MINI_APP_SECRET" ]; then
   SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-  LOCAL_CFG="$(cd "$SCRIPT_DIR/.." && pwd)/config.local.json"
-  if [ -f "$LOCAL_CFG" ]; then
-    WECHAT_MINI_APP_ID="${WECHAT_MINI_APP_ID:-$(python3 -c "import json;d=json.load(open('$LOCAL_CFG'));print((d.get('mini') or {}).get('appId') or '')")}"
-    WECHAT_MINI_APP_SECRET="${WECHAT_MINI_APP_SECRET:-$(python3 -c "import json;d=json.load(open('$LOCAL_CFG'));print((d.get('mini') or {}).get('appSecret') or '')")}"
+  ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+  START_DIR="${MK_WECHAT_START_DIR:-$PWD}"
+  # 从工作空间优先解析 mini 凭证
+  EVAL_OUT=$(cd "$ROOT_DIR" && MK_WECHAT_START_DIR="$START_DIR" node --input-type=module -e "
+    import { resolveConfig } from './scripts/lib/local-config.mjs';
+    const r = resolveConfig({ startDir: process.env.MK_WECHAT_START_DIR || process.cwd() });
+    const m = r.config.mini || {};
+    if (m.appId) console.log('WECHAT_MINI_APP_ID=' + JSON.stringify(m.appId));
+    if (m.appSecret) console.log('WECHAT_MINI_APP_SECRET=' + JSON.stringify(m.appSecret));
+  " 2>/dev/null || true)
+  if [ -n "$EVAL_OUT" ]; then
+    eval "$EVAL_OUT"
     export WECHAT_MINI_APP_ID WECHAT_MINI_APP_SECRET
   fi
 fi
 
 if [ -z "$WECHAT_MINI_APP_ID" ] || [ -z "$WECHAT_MINI_APP_SECRET" ]; then
-  echo "缺少 WECHAT_MINI_APP_ID / WECHAT_MINI_APP_SECRET（环境变量或 config.local.json 的 mini）。"
-  echo "提示: 运行 bash scripts/settings.sh 统一配置，或在 mp.weixin.qq.com 小程序开发设置获取。"
+  echo "缺少小程序凭证：请在工作空间设置页填写 mini，或设置 WECHAT_MINI_APP_ID / WECHAT_MINI_APP_SECRET。"
   exit 1
 fi
 

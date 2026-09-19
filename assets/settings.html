@@ -49,7 +49,7 @@
 <body>
 <main>
   <h1>本地统一设置</h1>
-  <p class="sub">主题色、公众号与小程序凭证保存在本机 <code>config.local.json</code>（已 gitignore）。环境变量若已设置则发布时优先用环境变量。</p>
+  <p class="sub">默认保存到<strong>当前工作空间</strong>的 <code>.mk-wechat-publish/config.json</code>（多公众号可按项目分开）。工作空间配置优先于 skill 级与环境变量。</p>
 
   <section>
     <h2>品牌色</h2>
@@ -102,7 +102,7 @@
     <button type="button" class="ghost" id="btnReload">重新加载</button>
     <button type="button" class="ghost" id="btnProbe">探测 IP / 白名单</button>
   </div>
-  <p class="warn">密钥仅存本机，请勿把 config.local.json 提交到 Git 或发给他人。发布走本机公网 IP，须加入公众号「IP 白名单」。</p>
+  <p class="warn">请勿将含密钥的配置提交到 Git。建议在项目 <code>.gitignore</code> 中加入 <code>.mk-wechat-publish/</code>。发布走本机公网 IP，须加入对应公众号的 IP 白名单。</p>
   <p class="sub" style="margin-top:16px">欢迎关注公众号 <strong style="color:var(--accent)">XLanAI</strong>（微信搜「XLanAI」）· 作者微信 MarkTo2088</p>
   <pre id="probeOut" style="display:none;white-space:pre-wrap;background:#12151a;border:1px solid var(--border);border-radius:8px;padding:12px;font-size:0.8rem;line-height:1.45;color:var(--muted);margin-top:12px;"></pre>
   <p id="msg"></p>
@@ -159,7 +159,11 @@
     $('miniAppSecret').placeholder = data.mini?.hasSecret
       ? '已保存（留空不修改）'
       : '未设置';
-    $('cfgPath').textContent = '保存路径: ' + (data.path || '');
+    $('cfgPath').textContent =
+      '写入: ' +
+      (data.path || '') +
+      (data.scope === 'workspace' ? '（工作空间）' : '（skill 级）') +
+      (data.workspaceRoot ? ' · 空间 ' + data.workspaceRoot : '');
     setMsg('已加载', true);
   }
 
@@ -205,10 +209,13 @@
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || '保存失败');
-      $('cfgPath').textContent = '保存路径: ' + (data.path || '');
+      $('cfgPath').textContent =
+        '写入: ' +
+        (data.path || '') +
+        (data.scope === 'workspace' ? '（工作空间）' : '（skill 级）');
       $('wechatAppSecret').value = '';
       $('miniAppSecret').value = '';
-      setMsg('已保存到 config.local.json', true);
+      setMsg('已保存到工作空间配置', true);
       await load();
     } catch (e) {
       setMsg(String(e.message || e), false);

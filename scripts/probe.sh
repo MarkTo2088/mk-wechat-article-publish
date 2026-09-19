@@ -32,5 +32,7 @@ if [ ! -d "$ROOT_DIR/node_modules/markdown-it" ]; then
   (cd "$ROOT_DIR" && "$(dirname "$NODE_BIN")/npm" install --silent 2>/dev/null || npm install --silent)
 fi
 
+# 工作空间从调用时的目录解析
+export MK_WECHAT_START_DIR="${MK_WECHAT_START_DIR:-$PWD}"
 cd "$ROOT_DIR"
 exec "$NODE_BIN" scripts/probe.mjs

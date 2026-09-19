@@ -203,7 +203,7 @@ ${articleHtml}
       });
       if (!res.ok) throw new Error('HTTP ' + res.status);
       const data = await res.json();
-      setStatus('已保存默认品牌色 → config.local.json', true);
+      setStatus('已保存默认品牌色到工作空间配置', true);
     } catch (e) {
       setStatus('保存失败：请先运行 bash scripts/settings.sh（本机设置服务）', false);
     }

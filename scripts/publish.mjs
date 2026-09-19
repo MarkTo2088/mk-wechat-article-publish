@@ -8,7 +8,7 @@ import { spawn } from 'child_process';
 import matter from 'gray-matter';
 import { renderMarkdown } from './lib/render.mjs';
 import { publishToWechatDraft } from './lib/wechat-draft.mjs';
-import { loadLocalConfig } from './lib/local-config.mjs';
+import { resolveConfig } from './lib/local-config.mjs';
 import { wrapDryPreview } from './lib/dry-preview.mjs';
 import { runProbe, formatProbeReport } from './lib/probe.mjs';
 
@@ -46,7 +46,17 @@ function loadJson(p) {
   }
 }
 
-const local = loadLocalConfig();
+const resolved = resolveConfig({ startDir: MD_DIR });
+const local = resolved.config;
+console.log('工作空间:', resolved.workspaceRoot);
+console.log(
+  '配置来源:',
+  resolved.hasWorkspaceConfig
+    ? '工作空间'
+    : resolved.hasSkillConfig
+      ? 'skill 级'
+      : '环境变量/默认'
+);
 
 let cfg = null;
 if (cfgArg) {
@@ -63,7 +73,7 @@ const title = unquote(fm.title) || BASE;
 const coverRaw = unquote(fm.cover) || '';
 const cover = coverRaw ? path.resolve(MD_DIR, coverRaw) : '';
 
-// frontmatter > --config > config.local.json
+// frontmatter > --config > 工作空间 > skill 级 > 默认
 const brandPrimary =
   unquote(fm.brand_primary) ||
   cfg?.brand?.primary ||
@@ -122,16 +132,16 @@ if (DRY) {
   process.exit(0);
 }
 
-const APP_ID = process.env.WECHAT_APP_ID || local.wechat.appId;
-const APP_SECRET = process.env.WECHAT_APP_SECRET || local.wechat.appSecret;
+const APP_ID = local.wechat.appId;
+const APP_SECRET = local.wechat.appSecret;
 if (!APP_ID || !APP_SECRET) {
-  console.error('缺少公众号凭证：请设置 WECHAT_APP_ID / WECHAT_APP_SECRET，');
-  console.error('或运行 bash scripts/settings.sh 写入 config.local.json。');
+  console.error('缺少公众号凭证：请在本工作空间运行 bash scripts/settings.sh 或 onboard.sh，');
+  console.error(`将写入 ${resolved.workspaceConfigPath}`);
   process.exit(1);
 }
 
 console.log('发布前连通性探测...');
-const probe = await runProbe();
+const probe = await runProbe({ startDir: MD_DIR });
 console.log(formatProbeReport(probe));
 if (!probe.ok) {
   console.error('\n发布已中止。请按上方步骤配置 IP 白名单后重试，或单独运行: bash scripts/probe.sh');

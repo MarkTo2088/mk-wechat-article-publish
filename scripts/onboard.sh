@@ -6,6 +6,8 @@ set -e
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+# 工作空间从调用时的目录解析（多公众号分项目）
+export MK_WECHAT_START_DIR="${MK_WECHAT_START_DIR:-$PWD}"
 
 resolve_node() {
   local cand major
