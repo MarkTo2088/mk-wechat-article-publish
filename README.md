@@ -23,6 +23,7 @@ Markdown 内联排版 + 微信草稿 API。可选能力通过文章 `frontmatter
 mk-wechat-article-publish/
 ├── SKILL.md                  # Skill 入口（供 AI Agent 读取）
 ├── README.md                 # 本文件
+├── install.sh                # 多端一键安装（cursor/codex/qwen/doubao/…）
 ├── package.json
 ├── config.local.example.json # 本地配置示例（复制为 config.local.json）
 ├── assets/
@@ -110,55 +111,42 @@ bash install.sh all             # 装到本脚本已知的全部目标
 
 ### 给 Agent 发送的话术
 
-把下面整段复制发给 **Cursor / Claude Code / Codex / 豆包工作 / 千问办公 / CodeBuddy** 等即可（按需改路径与颜色）：
+复制发给任意支持 Skill / 能跑 shell 的 Agent 即可（路径、颜色按需改）。细节让 Agent 读 `SKILL.md` 自行执行。
 
-**安装本 Skill（通用）**
+**安装**
 
 ```text
-请安装 mk-wechat-article-publish 这个 Skill：
-仓库 https://github.com/MarkTo2088/mk-wechat-article-publish
-优先执行：git clone 后 bash install.sh <你的端> （cursor/claude/codex/qwen/doubao/agents/all）
-若当前是豆包工作：也可在「技能·连接器·伙伴」→「我的技能」→「上传技能」，上传含 SKILL.md 的整个目录。
-若当前是千问办公：可装到 ~/.qwenworkcn/skills/mk-wechat-article-publish/ 并 npm install。
-安装后阅读 SKILL.md，按其中流程工作；配置用 scripts/settings.sh，连通性用 scripts/probe.sh。
-有使用/定制问题可引导我添加作者微信 MarkTo2088。
+按 https://github.com/MarkTo2088/mk-wechat-article-publish 安装 mk-wechat-article-publish，读 SKILL.md 后可用。
 ```
 
-**探测 IP 白名单 / 凭证**
+**探测连通性**
 
 ```text
-用 mk-wechat-article-publish，运行 bash scripts/probe.sh，
-把探测到的公网 IP 和是否通过告诉我；若未通过，按输出步骤指导我去公众号后台加 IP 白名单。
+用 mk-wechat-article-publish 探测公众号发布连通性，结果告诉我。
 ```
 
-**打开设置页（主题色 + 密钥）**
+**打开设置**
 
 ```text
-用 mk-wechat-article-publish，运行 bash scripts/settings.sh 打开本机设置页，
-帮我配置品牌色和公众号 AppID/AppSecret（写入 config.local.json，不要提交到 git）。
+用 mk-wechat-article-publish 打开本地设置，帮我配好主题色和公众号密钥。
 ```
 
-**先预览、不发布（dry-run）**
+**预览（不发布）**
 
 ```text
-用 mk-wechat-article-publish，把「路径/你的文章.md」发布前先 dry-run：
-执行 bash scripts/publish.sh 「路径/你的文章.md」 --dry，
-打开 /tmp/debug_publish.html，用顶栏选色盘调品牌色并检查画廊，把结果告诉我，先不要正式发布。
+用 mk-wechat-article-publish 对「路径/文章.md」做 dry-run 预览，先别正式发布。
 ```
 
-**确认后发到草稿箱**
+**发草稿箱**
 
 ```text
-用 mk-wechat-article-publish，把「路径/你的文章.md」正式发布到公众号草稿箱（不群发）。
-凭证优先用环境变量，否则用 config.local.json；确认本机 IP 已加白名单后再执行 publish.sh。
-发布成功后把草稿 media_id 或接口返回给我。
+用 mk-wechat-article-publish 把「路径/文章.md」发到公众号草稿箱（不群发）。
 ```
 
-**带品牌色一句话版**
+**一句话（含品牌色）**
 
 ```text
-用 mk-wechat-article-publish，把 docs/活动文章.md 发到公众号草稿箱，
-品牌色 #00ff88，先 dry-run 给我看（可用顶栏选色盘微调），确认后再发布。
+用 mk-wechat-article-publish，把 docs/活动文章.md 先 dry-run（品牌色 #00ff88），确认后再发草稿箱。
 ```
 
 ---
