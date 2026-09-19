@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>mk-wechat-article-publish 本地设置</title>
+  <style>
+    :root { --bg: #0f1115; --card: #1a1d24; --text: #e8eaed; --muted: #9aa0a6; --accent: #00ff88; --border: #2c313a; }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; min-height: 100vh; padding: 32px 16px;
+      font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Segoe UI", sans-serif;
+      background: radial-gradient(1200px 600px at 10% -10%, #1a3d2e 0%, transparent 50%), var(--bg);
+      color: var(--text);
+    }
+    main { max-width: 560px; margin: 0 auto; }
+    h1 { font-size: 1.35rem; margin: 0 0 6px; }
+    .sub { color: var(--muted); font-size: 0.9rem; margin-bottom: 24px; line-height: 1.5; }
+    section {
+      background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+      padding: 18px 18px 8px; margin-bottom: 16px;
+    }
+    section h2 { font-size: 0.95rem; margin: 0 0 12px; color: var(--accent); font-weight: 600; }
+    .row { margin-bottom: 14px; }
+    label { display: block; font-size: 0.8rem; color: var(--muted); margin-bottom: 6px; }
+    .color-row { display: flex; gap: 10px; align-items: center; }
+    input[type="color"] {
+      width: 48px; height: 36px; border: none; padding: 0; background: transparent; cursor: pointer;
+    }
+    input[type="text"], input[type="password"], input[type="number"] {
+      width: 100%; padding: 10px 12px; border-radius: 8px;
+      border: 1px solid var(--border); background: #12151a; color: var(--text); font-size: 0.95rem;
+    }
+    .color-row input[type="text"] { flex: 1; }
+    .actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 8px; }
+    button {
+      padding: 10px 18px; border: none; border-radius: 8px; cursor: pointer;
+      font-weight: 600; font-size: 0.95rem;
+    }
+    button.primary { background: var(--accent); color: #111; }
+    button.ghost { background: transparent; color: var(--muted); border: 1px solid var(--border); }
+    #msg { margin-top: 14px; font-size: 0.9rem; min-height: 1.4em; }
+    #msg.ok { color: var(--accent); }
+    #msg.err { color: #ff6b6b; }
+    .path { font-family: ui-monospace, monospace; font-size: 0.75rem; color: var(--muted); word-break: break-all; }
+    .warn { font-size: 0.8rem; color: #e6c07b; margin-top: 8px; line-height: 1.45; }
+  </style>
+</head>
+<body>
+<main>
+  <h1>本地统一设置</h1>
+  <p class="sub">主题色、公众号与小程序凭证保存在本机 <code>config.local.json</code>（已 gitignore）。环境变量若已设置则发布时优先用环境变量。</p>
+
+  <section>
+    <h2>品牌色</h2>
+    <div class="row">
+      <label>主色 brand_primary</label>
+      <div class="color-row">
+        <input type="color" id="primaryColor" value="#00ff88" />
+        <input type="text" id="primaryHex" value="#00ff88" />
+      </div>
+    </div>
+    <div class="row">
+      <label>次色 brand_secondary（标题渐变）</label>
+      <div class="color-row">
+        <input type="color" id="secondaryColor" value="#00d4ff" />
+        <input type="text" id="secondaryHex" value="#00d4ff" />
+      </div>
+    </div>
+    <div class="row">
+      <label>画廊图片宽度 %</label>
+      <input type="number" id="galleryWidth" min="20" max="100" value="62" />
+    </div>
+  </section>
+
+  <section>
+    <h2>公众号凭证（发布草稿）</h2>
+    <div class="row">
+      <label>AppID</label>
+      <input type="text" id="wechatAppId" autocomplete="off" placeholder="wx..." />
+    </div>
+    <div class="row">
+      <label>AppSecret</label>
+      <input type="password" id="wechatAppSecret" autocomplete="off" placeholder="留空则不修改已保存的密钥" />
+    </div>
+  </section>
+
+  <section>
+    <h2>小程序凭证（可选，生成小程序码）</h2>
+    <div class="row">
+      <label>Mini AppID</label>
+      <input type="text" id="miniAppId" autocomplete="off" />
+    </div>
+    <div class="row">
+      <label>Mini AppSecret</label>
+      <input type="password" id="miniAppSecret" autocomplete="off" placeholder="留空则不修改已保存的密钥" />
+    </div>
+  </section>
+
+  <div class="actions">
+    <button type="button" class="primary" id="btnSave">保存</button>
+    <button type="button" class="ghost" id="btnReload">重新加载</button>
+  </div>
+  <p class="warn">密钥仅存本机，请勿把 config.local.json 提交到 Git 或发给他人。</p>
+  <p id="msg"></p>
+  <p class="path" id="cfgPath"></p>
+</main>
+<script>
+(function () {
+  const $ = (id) => document.getElementById(id);
+  const msg = $('msg');
+
+  function normalizeHex(h) {
+    h = String(h || '').trim();
+    if (!h) return '#222222';
+    if (h[0] !== '#') h = '#' + h;
+    if (/^#[0-9a-fA-F]{3}$/.test(h)) {
+      h = '#' + h[1] + h[1] + h[2] + h[2] + h[3] + h[3];
+    }
+    return /^#[0-9a-fA-F]{6}$/.test(h) ? h.toLowerCase() : '#222222';
+  }
+
+  function linkColor(colorEl, hexEl) {
+    colorEl.addEventListener('input', () => { hexEl.value = colorEl.value; });
+    hexEl.addEventListener('change', () => {
+      hexEl.value = normalizeHex(hexEl.value);
+      colorEl.value = hexEl.value;
+    });
+  }
+  linkColor($('primaryColor'), $('primaryHex'));
+  linkColor($('secondaryColor'), $('secondaryHex'));
+
+  function setMsg(text, ok) {
+    msg.textContent = text || '';
+    msg.className = ok === true ? 'ok' : ok === false ? 'err' : '';
+  }
+
+  async function load() {
+    setMsg('加载中…');
+    const res = await fetch('/api/config');
+    const data = await res.json();
+    const p = normalizeHex(data.brand?.primary || '#00ff88');
+    const s = normalizeHex(data.brand?.secondary || '#00d4ff');
+    $('primaryHex').value = p;
+    $('primaryColor').value = p;
+    $('secondaryHex').value = s;
+    $('secondaryColor').value = s;
+    $('galleryWidth').value = data.gallery?.image_width || 62;
+    $('wechatAppId').value = data.wechat?.appId || '';
+    $('wechatAppSecret').value = '';
+    $('wechatAppSecret').placeholder = data.wechat?.hasSecret
+      ? '已保存（留空不修改）'
+      : '未设置';
+    $('miniAppId').value = data.mini?.appId || '';
+    $('miniAppSecret').value = '';
+    $('miniAppSecret').placeholder = data.mini?.hasSecret
+      ? '已保存（留空不修改）'
+      : '未设置';
+    $('cfgPath').textContent = '保存路径: ' + (data.path || '');
+    setMsg('已加载', true);
+  }
+
+  $('btnReload').addEventListener('click', () => load().catch((e) => setMsg(String(e), false)));
+  $('btnSave').addEventListener('click', async () => {
+    const body = {
+      brand: {
+        primary: normalizeHex($('primaryHex').value),
+        secondary: normalizeHex($('secondaryHex').value),
+      },
+      gallery: { image_width: Number($('galleryWidth').value) || 62 },
+      wechat: {
+        appId: $('wechatAppId').value.trim(),
+        appSecret: $('wechatAppSecret').value,
+      },
+      mini: {
+        appId: $('miniAppId').value.trim(),
+        appSecret: $('miniAppSecret').value,
+      },
+      keepSecretsIfEmpty: true,
+    };
+    try {
+      const res = await fetch('/api/config', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || '保存失败');
+      $('cfgPath').textContent = '保存路径: ' + (data.path || '');
+      $('wechatAppSecret').value = '';
+      $('miniAppSecret').value = '';
+      setMsg('已保存到 config.local.json', true);
+      await load();
+    } catch (e) {
+      setMsg(String(e.message || e), false);
+    }
+  });
+
+  load().catch((e) => setMsg(String(e), false));
+})();
+</script>
+</body>
+</html>

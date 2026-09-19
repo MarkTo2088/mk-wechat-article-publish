@@ -2,6 +2,7 @@
 .env
 .env.*
 !.env.example
+config.local.json
 
 # 本地产物
 *.zip

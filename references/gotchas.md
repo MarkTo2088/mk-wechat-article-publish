@@ -65,4 +65,10 @@ done
 ## 7. Node / 依赖
 
 - 需要 **Node ≥ 20.19**（推荐 22 LTS）
-- 首次在 skill 目录执行 `npm install`；之后 `publish.sh` 会检测 `node_modules`
+- 首次在 skill 目录执行 `npm install`；之后 `publish.sh` / `settings.sh` 会检测 `node_modules`
+
+## 8. 本地配置 config.local.json
+
+- 由 `bash scripts/settings.sh` 写入，含品牌色与密钥；**勿提交 git**
+- 发布时环境变量优先于该文件
+- dry-run 顶栏「保存为默认品牌色」依赖本机 `127.0.0.1:18765` 设置服务正在运行

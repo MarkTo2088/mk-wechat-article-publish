@@ -1,0 +1,17 @@
+{
+  "brand": {
+    "primary": "#00ff88",
+    "secondary": "#00d4ff"
+  },
+  "gallery": {
+    "image_width": 62
+  },
+  "wechat": {
+    "appId": "",
+    "appSecret": ""
+  },
+  "mini": {
+    "appId": "",
+    "appSecret": ""
+  }
+}

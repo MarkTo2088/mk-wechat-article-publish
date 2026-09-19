@@ -2,13 +2,14 @@
 
 把 Markdown 一键渲染成 **微信公众号图文草稿**（发布到草稿箱，不群发）的 Agent Skill。
 
-Markdown 内联排版 + 微信草稿 API。三类可选增强全部通过文章 `frontmatter` / 配置声明：
+Markdown 内联排版 + 微信草稿 API。可选能力通过文章 `frontmatter`、本地设置页或 `config.json` 声明：
 
 | 能力 | 说明 | 是否可选 |
 | --- | --- | --- |
-| 品牌色 | 标题/加粗/表头/引用边框使用你的品牌主色 | 可选（frontmatter 声明 `brand_primary`） |
-| 横向滑动画廊 | 多图 `<section>` 包裹 → 手机端左右滑动 | 可选（写了画廊结构即启用） |
-| 小程序码 | 生成小程序码图片，长按识别引流 | 可选（额外脚本 + 小程序凭证） |
+| 品牌色 | 标题/加粗/表头/引用边框使用你的品牌主色；dry-run 顶栏可选色盘 | 可选 |
+| 横向滑动画廊 | 多图 `<section>` 包裹 → 手机端左右滑动 | 可选 |
+| 小程序码 | 生成小程序码图片，长按识别引流 | 可选 |
+| 本地统一设置 | 主题色 + 公众号/小程序密钥一次写入 `config.local.json` | 推荐 |
 
 > 发布产物进入公众号**草稿箱**，由人工在后台确认后群发——Skill 不会自动群发。
 
@@ -22,21 +23,24 @@ Markdown 内联排版 + 微信草稿 API。三类可选增强全部通过文章 
 mk-wechat-article-publish/
 ├── SKILL.md                  # Skill 入口（供 AI Agent 读取）
 ├── README.md                 # 本文件
-├── package.json              # 本地依赖（markdown-it / gray-matter / form-data）
+├── package.json
+├── config.local.example.json # 本地配置示例（复制为 config.local.json）
 ├── assets/
-│   └── article_template.md   # 文章模板
+│   ├── article_template.md
+│   └── settings.html         # 统一设置页 UI
 ├── references/
-│   └── gotchas.md            # 微信 API 踩坑与对策
+│   └── gotchas.md
 ├── scripts/
-│   ├── publish.sh            # 发布入口（推荐）
-│   ├── publish.mjs           # 编排：渲染 → dry / 草稿发布
+│   ├── settings.sh           # 打开设置页（主题色 + 密钥）
+│   ├── publish.sh            # 发布入口
+│   ├── publish.mjs
 │   ├── lib/
-│   │   ├── render.mjs        # Markdown → 内联 HTML
-│   │   └── wechat-draft.mjs  # token / 上传图 / draft/add
-│   └── gen_miniprogram_qr.sh # 可选：生成小程序码图片
+│   │   ├── local-config.mjs
+│   │   ├── render.mjs
+│   │   ├── dry-preview.mjs   # dry-run 选色盘预览
+│   │   └── wechat-draft.mjs
+│   └── gen_miniprogram_qr.sh
 └── examples/
-    ├── sample.md
-    └── img/
 ```
 
 ---
@@ -48,21 +52,20 @@ mk-wechat-article-publish/
    cd mk-wechat-article-publish
    npm install
    ```
-   （之后跑 `publish.sh` 时若缺依赖会自动安装。）
-2. **公众号凭证**（发布必需）——写入 shell 配置 `~/.zshrc` / `~/.bashrc`：
+2. **推荐：本地统一设置**（主题色 + 公众号/小程序密钥，一次配好）：
+   ```bash
+   bash scripts/settings.sh
+   ```
+   浏览器会打开设置页，保存到本目录 `config.local.json`（已 gitignore，勿提交）。
+3. **或**继续用环境变量（优先级高于 `config.local.json`）：
    ```bash
    export WECHAT_APP_ID="你的公众号 AppID"
    export WECHAT_APP_SECRET="你的公众号 AppSecret"
-   source ~/.zshrc
+   # 可选小程序：WECHAT_MINI_APP_ID / WECHAT_MINI_APP_SECRET
    ```
-   凭证位置：微信公众平台 mp.weixin.qq.com → 设置与开发 → 基本配置 → 公众号开发信息。
-3. **IP 白名单**：把本机当前**公网出口 IP** 加入公众号后台「IP 白名单」
-   （同页面下方），否则报 `invalid ip ... not in whitelist`。家用宽带 IP 会变，变了需重加。
-4. **可选——小程序凭证**（仅生成小程序码需要，与公众号是两套）：
-   ```bash
-   export WECHAT_MINI_APP_ID="小程序 AppID"
-   export WECHAT_MINI_APP_SECRET="小程序 AppSecret"
-   ```
+4. **IP 白名单**：本机公网出口 IP 加入公众号后台「IP 白名单」，否则发布失败。
+
+品牌色优先级：文章 frontmatter → `--config` → `config.local.json` → 默认中性色。
 
 ---
 
@@ -97,19 +100,26 @@ cd ~/.cursor/skills/mk-wechat-article-publish && npm install
 有使用/定制问题可引导我添加作者微信 MarkTo2088。
 ```
 
+**打开设置页（主题色 + 密钥）**
+
+```text
+用 mk-wechat-article-publish，运行 bash scripts/settings.sh 打开本机设置页，
+帮我配置品牌色和公众号 AppID/AppSecret（写入 config.local.json，不要提交到 git）。
+```
+
 **先预览、不发布（dry-run）**
 
 ```text
 用 mk-wechat-article-publish，把「路径/你的文章.md」发布前先 dry-run：
 执行 bash scripts/publish.sh 「路径/你的文章.md」 --dry，
-打开 /tmp/debug_publish.html 检查排版、品牌色和画廊，把结果告诉我，先不要正式发布。
+打开 /tmp/debug_publish.html，用顶栏选色盘调品牌色并检查画廊，把结果告诉我，先不要正式发布。
 ```
 
 **确认后发到草稿箱**
 
 ```text
 用 mk-wechat-article-publish，把「路径/你的文章.md」正式发布到公众号草稿箱（不群发）。
-先确认 WECHAT_APP_ID / WECHAT_APP_SECRET 已配置、本机 IP 已加白名单，再执行 publish.sh。
+凭证优先用环境变量，否则用 config.local.json；确认本机 IP 已加白名单后再执行 publish.sh。
 发布成功后把草稿 media_id 或接口返回给我。
 ```
 
@@ -117,7 +127,7 @@ cd ~/.cursor/skills/mk-wechat-article-publish && npm install
 
 ```text
 用 mk-wechat-article-publish，把 docs/活动文章.md 发到公众号草稿箱，
-品牌色 #00ff88，先 dry-run 给我看，确认后再发布。
+品牌色 #00ff88，先 dry-run 给我看（可用顶栏选色盘微调），确认后再发布。
 ```
 
 ---
@@ -153,23 +163,23 @@ brand_secondary: "#00d4ff"         # 可选：标题渐变次色
 
 **要点**：
 - 图片用**相对文章所在目录**的路径，最稳
-- 品牌色不声明 = 中性深色主题；声明了则用品牌色
-- 想让多篇共用一套品牌色，可用 `--config config.json`
+- 品牌色：frontmatter > `--config` > `config.local.json`（设置页）> 默认中性色
+- 多篇共用品牌色：跑一次 `bash scripts/settings.sh`，或 `--config config.json`
 
 ---
 
 ## 四、发布
 
 ```bash
-# 1) dry-run 本地预览（不发布）
+# 0) 可选：统一设置主题色与密钥
+bash scripts/settings.sh
+
+# 1) dry-run 本地预览（不发布）——自动打开浏览器，顶栏可选色盘
 bash scripts/publish.sh 你的文章.md --dry
-#    → 生成 /tmp/debug_publish.html，浏览器打开检查品牌色与画廊
+#    → /tmp/debug_publish.html；「保存为默认品牌色」需设置服务在跑（settings.sh）
 
 # 2) 正式发布到公众号草稿箱
 bash scripts/publish.sh 你的文章.md
-
-# 带配置文件（默认品牌色等）
-bash scripts/publish.sh 你的文章.md --config config.json
 ```
 
 成功后在公众号后台「草稿箱」看到文章，人工预览确认后即可群发。
@@ -196,9 +206,10 @@ bash scripts/gen_miniprogram_qr.sh -o app.png --scene promo --page pages/home/in
 | `invalid ip ... not in whitelist` | 公网 IP 未加入公众号白名单（见上文） |
 | `45166 内容超长` | 正文内嵌了小绿书模式内容/小程序卡片 → 换小程序码图片、精简正文 |
 | `40066 invalid url rid` | `draft/batchdel` 批量删除偶发网关错 → 用单篇 `draft/delete` |
-| 颜色不是品牌色 | frontmatter 是否写了 `brand_primary`；值是否为 `#RRGGBB` |
-| 画廊图片纵向堆叠 | 确认画廊用的是 `<section style="overflow-x:auto ...">` 结构 |
+| 颜色不是品牌色 | 查 frontmatter / config.local.json / 设置页；dry-run 顶栏可微调 |
+| dry 保存默认色失败 | 先 `bash scripts/settings.sh` 保持设置服务运行 |
 | 缺少依赖 | 在 skill 目录执行 `npm install` |
+| 缺少凭证 | 环境变量或 `bash scripts/settings.sh` 写入 config.local.json |
 
 完整踩坑记录见 `references/gotchas.md`。
 

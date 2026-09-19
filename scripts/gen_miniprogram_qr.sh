@@ -29,8 +29,18 @@ while [[ $# -gt 0 ]]; do
 done
 
 if [ -z "$WECHAT_MINI_APP_ID" ] || [ -z "$WECHAT_MINI_APP_SECRET" ]; then
-  echo "缺少 WECHAT_MINI_APP_ID / WECHAT_MINI_APP_SECRET 环境变量（小程序凭证，与公众号凭证是两套）。"
-  echo "提示: 在 mp.weixin.qq.com 的「开发管理 → 开发设置 → 小程序代码 → AppID/AppSecret」获取。"
+  SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+  LOCAL_CFG="$(cd "$SCRIPT_DIR/.." && pwd)/config.local.json"
+  if [ -f "$LOCAL_CFG" ]; then
+    WECHAT_MINI_APP_ID="${WECHAT_MINI_APP_ID:-$(python3 -c "import json;d=json.load(open('$LOCAL_CFG'));print((d.get('mini') or {}).get('appId') or '')")}"
+    WECHAT_MINI_APP_SECRET="${WECHAT_MINI_APP_SECRET:-$(python3 -c "import json;d=json.load(open('$LOCAL_CFG'));print((d.get('mini') or {}).get('appSecret') or '')")}"
+    export WECHAT_MINI_APP_ID WECHAT_MINI_APP_SECRET
+  fi
+fi
+
+if [ -z "$WECHAT_MINI_APP_ID" ] || [ -z "$WECHAT_MINI_APP_SECRET" ]; then
+  echo "缺少 WECHAT_MINI_APP_ID / WECHAT_MINI_APP_SECRET（环境变量或 config.local.json 的 mini）。"
+  echo "提示: 运行 bash scripts/settings.sh 统一配置，或在 mp.weixin.qq.com 小程序开发设置获取。"
   exit 1
 fi
 
