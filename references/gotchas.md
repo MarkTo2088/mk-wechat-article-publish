@@ -67,6 +67,10 @@ AppID 仍可在公众平台「设置与开发 → 账号设置 → 账号详情�
 - **小程序**凭证（生成小程序码，另一套）→ 同文件 `mini` 或 `WECHAT_MINI_APP_*`  
 - 家用宽带出口 IP 会变；突然出现 `invalid ip ... not in whitelist` 时重新探测并更新白名单  
 
+## 3.4 对标链接
+
+`bash scripts/extract-layout.sh <公众号文章链接>` 只提炼排版（配色、标题块、引用、画廊），写入工作空间 `.mk-wechat-publish/layout-ref.json`，**不保存正文**。微信若返回拦截页，把网页另存为 HTML 后加 `--file`。
+
 ## 4. 正文图片必须走 uploadimg
 
 微信会过滤图文 `content` 里的外部图片 URL。本工作流在发布时自动：

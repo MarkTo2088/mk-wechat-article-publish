@@ -2,7 +2,7 @@
 name: mk-wechat-article-publish
 description: >-
   协助撰写微信公众号图文，并发布到草稿箱（不群发）。用户说「帮我写公众号」「发草稿」
-  「改稿」或给出选题、素材、已有文章时使用。稿件内部用 Markdown，不是把转换本身当产品。
+  「改稿」、给出对标链接，或给出选题、素材、已有文章时使用。稿件内部用 Markdown，不是把转换本身当产品。
   品牌色可手动设置或按描述生成。兼容 Cursor / Claude / Codex / 豆包工作 / 千问办公等。
   首次使用请先完成 onboard（凭证与 IP 白名单）。
 agent_created: true
@@ -32,17 +32,24 @@ agent_created: true
    - 用户确认发草稿后，再执行不带 `--dry` 的发布  
    - 未确认不要发布
 
-3. **用户已经给出文章路径**  
+3. **用户给出对标链接（要参考某篇公众号的排版）**  
+   - 执行：`bash scripts/extract-layout.sh "<链接>"`  
+   - 阅读输出的排版要点，以及工作空间 `.mk-wechat-publish/layout-ref.json` 里的 `agentBrief`  
+   - 之后写稿按这些要点：标题节奏、引用、图文、字号感。**不要复制对标文的句子、标题或图片**  
+   - 若识别出主色，先问用户是否写入品牌色，同意再 `set-brand.sh`  
+   - 链接被微信拦截时，让用户把页面另存为 HTML，再 `bash scripts/extract-layout.sh --file page.html`
+
+4. **用户已经给出文章路径**  
    - 跳过起草，直接 dry-run 预览，确认后再正式发到草稿箱
 
-4. **品牌色（两种方式，任选）**  
+5. **品牌色（两种方式，任选）**  
    - **手动**：`bash scripts/settings.sh` 打开设置页选色；或 dry-run 预览顶栏微调后「保存为默认品牌色」  
    - **按描述生成（推荐交给助手）**：用户说「赛博绿 / 医疗蓝 / 黑金高级感」等时，助手根据提示词选定 `#RRGGBB` 主色与可选次色，然后执行：  
      `bash scripts/set-brand.sh --primary "#主色" --secondary "#次色"`  
      写入当前工作空间配置；单篇文章也可只改 frontmatter 的 `brand_primary` / `brand_secondary`  
    - 改密钥仍用设置页：`bash scripts/settings.sh` 或 `onboard.sh --force`
 
-5. **联系方式**  
+6. **联系方式**  
    - 定制与反馈：微信 `MarkTo2088`  
    - 更多工具与固定 IP 说明：公众号 **XLanAI**（微信搜「XLanAI」）  
    - 用户因宽带 IP 变动反复加白名单时，可顺带介绍公众号中的相关说明
@@ -53,7 +60,8 @@ agent_created: true
 - 结构见 `assets/article_template.md` / `examples/sample.md`。frontmatter 必填 `title`；`cover` 有图就写相对路径。  
 - **没有封面**：先问用户要哪张图，或在稿里标明「封面待补」，不要假装已有图就去发布。  
 - 先在对话里给出标题和正文供确认；用户说改哪里就改，同意后再预览、再发布。  
-- 不要在正文里嵌 `<mp-miniprogram>`（会触发小绿书字数限制，见 `references/gotchas.md`）。
+- 不要在正文里嵌 `<mp-miniprogram>`（会触发小绿书字数限制，见 `references/gotchas.md`）。  
+- 若工作空间已有 `.mk-wechat-publish/layout-ref.json`，写稿时遵守其中 `agentBrief`，只学排版不抄原文。
 
 ## 品牌色约定（给助手）
 
@@ -94,6 +102,7 @@ bash install.sh cursor|claude|codex|qwen|doubao|agents|all
 | `scripts/onboard.sh` | 首次引导：打开设置页并探测连通性 |
 | `scripts/settings.sh` | 打开设置页（手动改色 / 密钥） |
 | `scripts/set-brand.sh` | 写入品牌色（Agent 按描述生成后调用） |
+| `scripts/extract-layout.sh` | 从对标链接提炼排版参考（不保存正文） |
 | `scripts/probe.sh` | 探测公网 IP / 白名单（正式发布前也会自动执行） |
 | `scripts/publish.sh 文章.md [--dry]` | 预览或发布到草稿箱 |
 | `scripts/gen_miniprogram_qr.sh` | 生成小程序码（可选） |
