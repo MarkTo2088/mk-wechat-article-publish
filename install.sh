@@ -99,9 +99,18 @@ for t in "${TARGETS[@]}"; do
 done
 
 echo ""
-echo "下一步:"
-echo "  1) 重启 / 新开对应 Agent 会话"
-echo "  2) bash \"$SRC_DIR/scripts/settings.sh\"  # 配主题色与密钥"
-echo "  3) bash \"$SRC_DIR/scripts/probe.sh\"     # 探测 IP 白名单"
-echo "豆包工作若未自动发现 ~/.user_skills：客户端「技能·连接器·伙伴」→ 上传本目录"
+echo "安装完成。开始首次引导（设置页 / IP 探测）…"
+# 用源码目录引导（各端拷贝后同一套脚本）；失败不阻断安装
+set +e
+bash "$SRC_DIR/scripts/onboard.sh"
+ONBOARD_CODE=$?
+set -e
+echo ""
+case "$ONBOARD_CODE" in
+  0) echo "引导结果: READY（可发布）" ;;
+  2) echo "引导结果: 请在已打开的设置页保存凭证后，让 Agent 再跑 onboard" ;;
+  3) echo "引导结果: 请按输出将公网 IP 加入公众号白名单后，让 Agent 再跑 onboard" ;;
+  *) echo "引导结果: 未完成（exit $ONBOARD_CODE），可稍后 bash scripts/onboard.sh" ;;
+esac
+echo "豆包工作若未自动发现技能：客户端「技能·连接器·伙伴」→ 上传本目录"
 echo "仓库: https://github.com/MarkTo2088/mk-wechat-article-publish"

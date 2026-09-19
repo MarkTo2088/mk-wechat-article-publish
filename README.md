@@ -33,6 +33,7 @@ mk-wechat-article-publish/
 │   └── gotchas.md
 ├── scripts/
 │   ├── settings.sh           # 打开设置页（主题色 + 密钥）
+│   ├── onboard.sh            # 首次引导：自动开设置 + 探测
 │   ├── probe.sh              # 探测公网 IP / 白名单 / 凭证
 │   ├── publish.sh            # 发布入口
 │   ├── publish.mjs
@@ -111,43 +112,13 @@ bash install.sh all             # 装到本脚本已知的全部目标
 
 ### 给 Agent 发送的话术
 
-复制发给任意支持 Skill / 能跑 shell 的 Agent 即可（路径、颜色按需改）。细节让 Agent 读 `SKILL.md` 自行执行。
-
-**安装**
+只需这一句（复制发送）。安装后 Agent 会按 `SKILL.md` 自动引导设置页与 IP 白名单，无需再背探测/发布话术。
 
 ```text
-按 https://github.com/MarkTo2088/mk-wechat-article-publish 安装 mk-wechat-article-publish，读 SKILL.md 后可用。
+按 https://github.com/MarkTo2088/mk-wechat-article-publish 安装 mk-wechat-article-publish，装完按 SKILL.md 引导我完成配置。
 ```
 
-**探测连通性**
-
-```text
-用 mk-wechat-article-publish 探测公众号发布连通性，结果告诉我。
-```
-
-**打开设置**
-
-```text
-用 mk-wechat-article-publish 打开本地设置，帮我配好主题色和公众号密钥。
-```
-
-**预览（不发布）**
-
-```text
-用 mk-wechat-article-publish 对「路径/文章.md」做 dry-run 预览，先别正式发布。
-```
-
-**发草稿箱**
-
-```text
-用 mk-wechat-article-publish 把「路径/文章.md」发到公众号草稿箱（不群发）。
-```
-
-**一句话（含品牌色）**
-
-```text
-用 mk-wechat-article-publish，把 docs/活动文章.md 先 dry-run（品牌色 #00ff88），确认后再发草稿箱。
-```
+之后直接说「发这篇 xxx.md」或把文章路径丢给 Agent 即可。
 
 ---
 
