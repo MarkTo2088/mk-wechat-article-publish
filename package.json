@@ -1,0 +1,19 @@
+{
+  "name": "mk-wechat-article-publish",
+  "version": "2.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Markdown → WeChat Official Account draft (self-contained, no wenyan)",
+  "engines": {
+    "node": ">=20.19.0"
+  },
+  "scripts": {
+    "publish": "node scripts/publish.mjs",
+    "dry": "node scripts/publish.mjs"
+  },
+  "dependencies": {
+    "form-data": "^4.0.2",
+    "gray-matter": "^4.0.3",
+    "markdown-it": "^14.1.0"
+  }
+}

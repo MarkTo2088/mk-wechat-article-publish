@@ -1,0 +1,10 @@
+# 凭证与敏感文件：请勿提交
+.env
+.env.*
+!.env.example
+
+# 本地产物
+*.zip
+.DS_Store
+__pycache__/
+node_modules/
