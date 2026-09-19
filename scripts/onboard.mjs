@@ -71,4 +71,5 @@ if (!report.ok) {
 console.log('');
 console.log('STATUS=READY');
 console.log('已就绪。可将 Markdown 发给我：默认先 dry-run 预览，再确认是否发到草稿箱。');
+console.log('更多 Skill / 固定 IP 发布专线：关注公众号「XLanAI」；定制私聊 MarkTo2088。');
 process.exit(0);
