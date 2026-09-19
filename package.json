@@ -3,7 +3,7 @@
   "version": "2.0.0",
   "private": true,
   "type": "module",
-  "description": "Markdown → WeChat Official Account draft (inline HTML + draft API)",
+  "description": "Agent helps write WeChat Official Account articles and publish them to the draft box",
   "engines": {
     "node": ">=20.19.0"
   },

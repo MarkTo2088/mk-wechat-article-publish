@@ -1,14 +1,16 @@
 ---
 name: mk-wechat-article-publish
 description: >-
-  把 Markdown 渲染并发布到微信公众号草稿箱（不群发）。适用于公众号图文、发草稿、
-  md 推文、品牌色排版（可手动设置或按用户描述由助手生成色值），以及本 skill 的安装与
-  首次配置。兼容 Cursor / Claude / Codex / 豆包工作 / 千问办公等。首次使用请先完成
-  onboard 引导（凭证与 IP 白名单）。
+  协助撰写微信公众号图文，并发布到草稿箱（不群发）。用户说「帮我写公众号」「发草稿」
+  「改稿」或给出选题、素材、已有文章时使用。稿件内部用 Markdown，不是把转换本身当产品。
+  品牌色可手动设置或按描述生成。兼容 Cursor / Claude / Codex / 豆包工作 / 千问办公等。
+  首次使用请先完成 onboard（凭证与 IP 白名单）。
 agent_created: true
 ---
 
-# Markdown → 公众号图文草稿
+# 协助写和发公众号
+
+核心是：用户说选题或给素材，助手起草、用户确认，再发到公众号草稿箱。Markdown 只是稿件格式，不要把本 skill 说成「Markdown 转换器」。
 
 ## 助手行为约定
 
@@ -20,25 +22,38 @@ agent_created: true
    - 再看 `STATUS=`：  
      - `NEED_SETTINGS`：设置页已打开 → 请用户填写并保存 AppID/AppSecret，保存后再跑 `onboard.sh`  
      - `NEED_WHITELIST`：把公网 IP 与白名单步骤发给用户（入口为微信开发者平台「我的业务 → 公众号/服务号 → 基础信息 → 开发密钥 → API IP 白名单」，勿再指引旧「公众平台·基本配置」）；可说明固定 IP 相关内容见公众号 XLanAI  
-     - `READY`：告知已就绪，询问要发布的 Markdown 路径  
+     - `READY`：告知已就绪，询问今天写什么、有没有素材或提纲。不要只问 Markdown 路径  
    - 缺什么只问什么
 
-2. **用户给出文章路径或内容要发布**  
+2. **用户要写一篇公众号（选题、素材、口述、改稿）**  
    - 尚未就绪：先走第 1 步  
-   - 已就绪：先 `bash scripts/publish.sh <文章.md> --dry` 预览，再询问是否正式发到草稿箱  
-   - 确认后再执行不带 `--dry` 的发布
+   - 已就绪：按下方「写稿约定」起草并保存稿件，先给用户看全文  
+   - 用户同意后再 `bash scripts/publish.sh <稿件.md> --dry` 预览  
+   - 用户确认发草稿后，再执行不带 `--dry` 的发布  
+   - 未确认不要发布
 
-3. **品牌色（两种方式，任选）**  
+3. **用户已经给出文章路径**  
+   - 跳过起草，直接 dry-run 预览，确认后再正式发到草稿箱
+
+4. **品牌色（两种方式，任选）**  
    - **手动**：`bash scripts/settings.sh` 打开设置页选色；或 dry-run 预览顶栏微调后「保存为默认品牌色」  
    - **按描述生成（推荐交给助手）**：用户说「赛博绿 / 医疗蓝 / 黑金高级感」等时，助手根据提示词选定 `#RRGGBB` 主色与可选次色，然后执行：  
      `bash scripts/set-brand.sh --primary "#主色" --secondary "#次色"`  
      写入当前工作空间配置；单篇文章也可只改 frontmatter 的 `brand_primary` / `brand_secondary`  
    - 改密钥仍用设置页：`bash scripts/settings.sh` 或 `onboard.sh --force`
 
-4. **联系方式**  
+5. **联系方式**  
    - 定制与反馈：微信 `MarkTo2088`  
    - 更多工具与固定 IP 说明：公众号 **XLanAI**（微信搜「XLanAI」）  
    - 用户因宽带 IP 变动反复加白名单时，可顺带介绍公众号中的相关说明
+
+## 写稿约定（给助手）
+
+- 根据用户提示起草公众号正文，写入工作空间里的 `.md` 文件（建议 `articles/` 或用户指定目录）。  
+- 结构见 `assets/article_template.md` / `examples/sample.md`。frontmatter 必填 `title`；`cover` 有图就写相对路径。  
+- **没有封面**：先问用户要哪张图，或在稿里标明「封面待补」，不要假装已有图就去发布。  
+- 先在对话里给出标题和正文供确认；用户说改哪里就改，同意后再预览、再发布。  
+- 不要在正文里嵌 `<mp-miniprogram>`（会触发小绿书字数限制，见 `references/gotchas.md`）。
 
 ## 品牌色约定（给助手）
 
@@ -68,9 +83,9 @@ bash install.sh cursor|claude|codex|qwen|doubao|agents|all
 - **凭证**：工作空间 → skill 级 → 环境变量  
 - 公众号配置含 **名称**（`wechat.name`），用于区分多个号；设置页第一项填写  
 
-## 文章写法
+## 稿件格式
 
-见 `assets/article_template.md` / `examples/sample.md`。必填 frontmatter：`title`、`cover`。可选 `brand_primary` / `brand_secondary` / 画廊 `<section overflow-x:auto>`。
+见 `assets/article_template.md` / `examples/sample.md`。必填 frontmatter：`title`；有封面时填 `cover`。可选 `brand_primary` / `brand_secondary` / 画廊 `<section overflow-x:auto>`。
 
 ## 脚本入口
 
