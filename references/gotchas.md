@@ -83,6 +83,8 @@ AppID 仍可在公众平台「设置与开发 → 账号设置 → 账号详情�
 2. 调用 `cgi-bin/media/uploadimg` 换取 `mmbiz.qpic.cn` URL
 3. 封面走 `material/add_material?type=image` 得到 `thumb_media_id`
 
+上传必须把文件读成 Buffer 再交给 Node `fetch`，并带上 `Content-Length`。用 `createReadStream` 直接当 body 时，Node 22 的 undici 会把 media 传空，微信返回 `41005 media data missing`。
+
 **注意**：已是 `http(s)://` 的外链图不会自动转存；若草稿里缺图，请改成本地相对路径。
 
 ## 5. 画廊横排写法
