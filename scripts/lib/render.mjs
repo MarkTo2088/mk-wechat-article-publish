@@ -118,14 +118,50 @@ export function renderMarkdown(markdownBody, opts = {}) {
       `margin:1em 0;padding:0.6em 1em;border-left:4px solid ${pal.primary};background:${pal.bg};color:${pal.muted};line-height:1.7;`
     )}>`;
 
-  md.renderer.rules.bullet_list_open = () =>
-    `<ul${styleAttrs(`margin:0.8em 0;padding-left:1.4em;line-height:1.75;color:${pal.text};`)}>`;
-
-  md.renderer.rules.ordered_list_open = () =>
-    `<ol${styleAttrs(`margin:0.8em 0;padding-left:1.4em;line-height:1.75;color:${pal.text};`)}>`;
-
-  md.renderer.rules.list_item_open = () =>
-    `<li${styleAttrs(`margin:0.25em 0;`)}>`;
+  // 列表不用 <ul>/<li>：微信编辑器对原生列表标签支持差，圆点会与内容分离、单独成行。
+  // 改为带品牌色圆点的 <p>（悬挂缩进），点永远和文字在同一行。
+  md.renderer.rules.bullet_list_open = (tokens, idx, options, env) => {
+    env.listDepth = (env.listDepth || 0) + 1;
+    env.inOrdered = false;
+    return env.listDepth > 1 ? '' : `<section${styleAttrs(`margin:0.8em 0;`)}>`;
+  };
+  md.renderer.rules.bullet_list_close = (tokens, idx, options, env) => {
+    env.listDepth = (env.listDepth || 1) - 1;
+    return env.listDepth > 0 ? '' : `</section>\n`;
+  };
+  md.renderer.rules.ordered_list_open = (tokens, idx, options, env) => {
+    env.listDepth = (env.listDepth || 0) + 1;
+    env.inOrdered = true;
+    env.orderCounter = 0;
+    return env.listDepth > 1 ? '' : `<section${styleAttrs(`margin:0.8em 0;`)}>`;
+  };
+  md.renderer.rules.ordered_list_close = (tokens, idx, options, env) => {
+    env.listDepth = (env.listDepth || 1) - 1;
+    return env.listDepth > 0 ? '' : `</section>\n`;
+  };
+  md.renderer.rules.list_item_open = (tokens, idx, options, env) => {
+    env.inListItem = (env.inListItem || 0) + 1;
+    const base = `margin:0.35em 0;line-height:1.75;color:${pal.text};padding-left:1.15em;text-indent:-1.15em;`;
+    if (env.listDepth > 1) {
+      // 嵌套列表：缩进一层，不用悬挂缩进
+      return `<p${styleAttrs(`margin:0.3em 0 0.3em 1.2em;line-height:1.75;color:${pal.text};`)}>`;
+    }
+    const marker = env.inOrdered ? `${++env.orderCounter}.` : `•`;
+    return `<p${styleAttrs(base)}><span${styleAttrs(
+      `color:${pal.primary};font-weight:700;margin-right:0.4em;`
+    )}>${marker}</span>`;
+  };
+  md.renderer.rules.list_item_close = (tokens, idx, options, env) => {
+    env.inListItem = (env.inListItem || 1) - 1;
+    return `</p>`;
+  };
+  // li 内部的段落标签会破坏上面的 <p> 结构，抑制掉
+  md.renderer.rules.paragraph_open = (tokens, idx, options, env) => {
+    if (env.inListItem) return '';
+    return `<p${styleAttrs(`margin:0.85em 0;line-height:1.75;color:${pal.text};font-size:15px;`)}>`;
+  };
+  md.renderer.rules.paragraph_close = (tokens, idx, options, env) =>
+    env.inListItem ? '' : `</p>`;
 
   md.renderer.rules.table_open = () =>
     `<table${styleAttrs(
@@ -161,7 +197,9 @@ export function renderMarkdown(markdownBody, opts = {}) {
   };
 
   md.renderer.rules.hr = () =>
-    `<hr${styleAttrs(`border:none;border-top:1px solid ${pal.border};margin:1.5em 0;`)} />`;
+    `<section${styleAttrs(
+      `margin:1.5em 0;border-top:1px solid ${pal.border};font-size:0;line-height:0;height:0;`
+    )}>&nbsp;</section>\n`;
 
   md.renderer.rules.link_open = (tokens, idx, options, env, self) => {
     const aIndex = tokens[idx].attrIndex('style');
