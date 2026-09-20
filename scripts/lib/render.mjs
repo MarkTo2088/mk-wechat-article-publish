@@ -148,7 +148,7 @@ export function renderMarkdown(markdownBody, opts = {}) {
     }
     const marker = env.inOrdered ? `${++env.orderCounter}.` : `•`;
     return `<p${styleAttrs(base)}><span${styleAttrs(
-      `color:${pal.primary};font-weight:700;margin-right:0.4em;`
+      `color:${pal.text};font-weight:700;margin-right:0.4em;`
     )}>${marker}</span>`;
   };
   md.renderer.rules.list_item_close = (tokens, idx, options, env) => {
