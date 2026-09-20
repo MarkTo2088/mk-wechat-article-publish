@@ -22,15 +22,25 @@ export const SETTINGS_PORT = 18765;
 export const EMPTY_CONFIG = {
   brand: { primary: '', secondary: '' },
   gallery: { image_width: 62 },
+  layout: { heading_style: 'accent' },
   wechat: { name: '', appId: '', appSecret: '' },
   mini: { appId: '', appSecret: '' },
 };
+
+function normalizeHeadingStyle(raw) {
+  const v = String(raw || '')
+    .trim()
+    .toLowerCase();
+  if (v === 'block' || v === 'plain' || v === 'accent') return v;
+  return 'accent';
+}
 
 function normalizeConfig(raw) {
   if (!raw || typeof raw !== 'object') {
     return {
       brand: { ...EMPTY_CONFIG.brand },
       gallery: { ...EMPTY_CONFIG.gallery },
+      layout: { ...EMPTY_CONFIG.layout },
       wechat: { ...EMPTY_CONFIG.wechat },
       mini: { ...EMPTY_CONFIG.mini },
     };
@@ -42,6 +52,11 @@ function normalizeConfig(raw) {
     },
     gallery: {
       image_width: Number(raw?.gallery?.image_width) || 62,
+    },
+    layout: {
+      heading_style: normalizeHeadingStyle(
+        raw?.layout?.heading_style ?? raw?.heading_style
+      ),
     },
     wechat: {
       name: raw?.wechat?.name || '',
@@ -113,6 +128,11 @@ function mergeLayer(base, over) {
     gallery: {
       image_width: o.gallery.image_width || b.gallery.image_width || 62,
     },
+    layout: {
+      heading_style: nonEmpty(o.layout?.heading_style)
+        ? normalizeHeadingStyle(o.layout.heading_style)
+        : b.layout?.heading_style || 'accent',
+    },
     wechat: {
       name: nonEmpty(o.wechat.name) ? o.wechat.name : b.wechat.name,
       appId: nonEmpty(o.wechat.appId) ? o.wechat.appId : b.wechat.appId,
@@ -133,6 +153,7 @@ function envCredentials() {
   return {
     brand: { primary: '', secondary: '' },
     gallery: { image_width: 62 },
+    layout: { heading_style: '' },
     wechat: {
       name: process.env.WECHAT_ACCOUNT_NAME || '',
       appId: process.env.WECHAT_APP_ID || '',
@@ -224,6 +245,7 @@ export function patchLocalConfig(partial, opts = {}) {
   const next = {
     brand: { ...existing.brand, ...(partial.brand || {}) },
     gallery: { ...existing.gallery, ...(partial.gallery || {}) },
+    layout: { ...existing.layout, ...(partial.layout || {}) },
     wechat: { ...existing.wechat, ...(partial.wechat || {}) },
     mini: { ...existing.mini, ...(partial.mini || {}) },
   };
@@ -237,6 +259,7 @@ export function publicConfigView(startDir) {
   return {
     brand: { ...cfg.brand },
     gallery: { ...cfg.gallery },
+    layout: { ...cfg.layout },
     wechat: {
       name: cfg.wechat.name || '',
       appId: cfg.wechat.appId || '',

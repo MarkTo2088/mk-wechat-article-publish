@@ -91,9 +91,16 @@ const galleryWidth =
   cfg?.gallery?.image_width ||
   local.gallery.image_width ||
   62;
+const headingStyle =
+  unquote(fm.heading_style) ||
+  cfg?.layout?.heading_style ||
+  cfg?.heading_style ||
+  local.layout?.heading_style ||
+  'accent';
 
 console.log('标题:', title);
 console.log('封面:', cover || '(无)');
+console.log('标题样式:', headingStyle);
 if (brandPrimary) {
   console.log(
     '品牌色:',
@@ -106,6 +113,7 @@ const { html, galleryCount, palette } = renderMarkdown(body, {
   brandPrimary,
   brandSecondary,
   galleryWidth,
+  headingStyle,
 });
 
 if (DRY) {

@@ -40,13 +40,51 @@ function styleAttrs(style) {
   return ` style="${style}"`;
 }
 
+export function normalizeHeadingStyle(raw) {
+  const v = String(raw || '')
+    .trim()
+    .toLowerCase();
+  if (v === 'block' || v === 'plain' || v === 'accent') return v;
+  return 'accent';
+}
+
+/** 按 heading_style 生成标题内联样式 */
+export function headingStylesFor(pal, headingStyle) {
+  const style = normalizeHeadingStyle(headingStyle);
+  if (style === 'block') {
+    return {
+      h1: `margin:1.4em 0 0.6em;padding:0.35em 0.5em;font-size:1.35em;font-weight:700;color:#fff;background:${pal.grad};border-radius:4px;line-height:1.4;`,
+      h2: `margin:1.3em 0 0.55em;padding:0.3em 0.45em;font-size:1.2em;font-weight:700;color:#fff;background:${pal.primary};border-radius:4px;line-height:1.4;`,
+      h3: `margin:1.2em 0 0.5em;padding:0.2em 0;font-size:1.08em;font-weight:700;color:${pal.primary};border-bottom:2px solid ${pal.border};line-height:1.4;`,
+      h4: `margin:1em 0 0.4em;font-size:1em;font-weight:700;color:${pal.primary};`,
+    };
+  }
+  if (style === 'plain') {
+    return {
+      h1: `margin:1.4em 0 0.6em;padding:0;font-size:1.35em;font-weight:700;color:${pal.text};line-height:1.4;`,
+      h2: `margin:1.3em 0 0.55em;padding:0;font-size:1.2em;font-weight:700;color:${pal.text};line-height:1.4;`,
+      h3: `margin:1.2em 0 0.5em;padding:0;font-size:1.08em;font-weight:700;color:${pal.text};line-height:1.4;`,
+      h4: `margin:1em 0 0.4em;font-size:1em;font-weight:700;color:${pal.text};`,
+    };
+  }
+  // accent：品牌色字 + 底线，无实心底
+  return {
+    h1: `margin:1.4em 0 0.6em;padding:0.15em 0;font-size:1.35em;font-weight:700;color:${pal.primary};border-bottom:2px solid ${pal.border};line-height:1.4;`,
+    h2: `margin:1.3em 0 0.55em;padding:0.1em 0;font-size:1.2em;font-weight:700;color:${pal.primary};border-bottom:2px solid ${pal.border};line-height:1.4;`,
+    h3: `margin:1.2em 0 0.5em;padding:0.1em 0;font-size:1.08em;font-weight:700;color:${pal.primary};border-bottom:1px solid ${pal.border};line-height:1.4;`,
+    h4: `margin:1em 0 0.4em;font-size:1em;font-weight:700;color:${pal.primary};`,
+  };
+}
+
 /**
  * @param {string} markdownBody - 已去掉 frontmatter 的正文
- * @param {{ brandPrimary?: string|null, brandSecondary?: string|null, galleryWidth?: number|string }} opts
+ * @param {{ brandPrimary?: string|null, brandSecondary?: string|null, galleryWidth?: number|string, headingStyle?: string }} opts
  */
 export function renderMarkdown(markdownBody, opts = {}) {
   const galleryWidth = Number(opts.galleryWidth) || 62;
   const pal = buildPalette(opts.brandPrimary, opts.brandSecondary);
+  const headingStyle = normalizeHeadingStyle(opts.headingStyle);
+  const headingCss = headingStylesFor(pal, headingStyle);
 
   const md = new MarkdownIt({
     html: true,
@@ -62,13 +100,7 @@ export function renderMarkdown(markdownBody, opts = {}) {
 
   md.renderer.rules.heading_open = (tokens, idx) => {
     const level = tokens[idx].tag; // h1/h2/h3...
-    const styles = {
-      h1: `margin:1.4em 0 0.6em;padding:0.35em 0.5em;font-size:1.35em;font-weight:700;color:#fff;background:${pal.grad};border-radius:4px;line-height:1.4;`,
-      h2: `margin:1.3em 0 0.55em;padding:0.3em 0.45em;font-size:1.2em;font-weight:700;color:#fff;background:${pal.primary};border-radius:4px;line-height:1.4;`,
-      h3: `margin:1.2em 0 0.5em;padding:0.2em 0;font-size:1.08em;font-weight:700;color:${pal.primary};border-bottom:2px solid ${pal.border};line-height:1.4;`,
-      h4: `margin:1em 0 0.4em;font-size:1em;font-weight:700;color:${pal.primary};`,
-    };
-    const s = styles[level] || styles.h4;
+    const s = headingCss[level] || headingCss.h4;
     return `<${level}${styleAttrs(s)}>`;
   };
 

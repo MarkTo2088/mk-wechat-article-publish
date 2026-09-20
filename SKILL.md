@@ -81,7 +81,8 @@ agent_created: true
 
 ## 品牌色约定（给助手）
 
-- 用户描述风格/行业/情绪时：**主动生成**一对十六进制色（主色必填，次色用于标题渐变，可省略）。  
+- 用户描述风格/行业/情绪时：**主动生成**一对十六进制色（主色必填，次色用于渐变/点缀，可省略）。  
+- **品牌色不等于标题色块**：默认 `heading_style=accent`（标题品牌色字 + 底线）。只有对标确有大色块、或用户明确要求时才用 `block`。  
 - 生成后先口头确认色值（如「主色 #0A7A5C，次色 #1DBF8A」），用户同意再 `set-brand.sh` 写入；若用户已说「直接用」可跳过确认。  
 - 单篇临时配色 → 写进该文 frontmatter；多篇共用 → 写工作空间默认色。  
 - 不要编造无效色值；必须是 `#` + 6 位十六进制。  
@@ -104,12 +105,13 @@ bash install.sh cursor|claude|codex|qwen|doubao|agents|all
 ## 配置优先级
 
 - **品牌色**：文章 frontmatter → `--config` → **工作空间** → skill 级 `config.local.json` → 默认  
+- **标题样式 `heading_style`**：frontmatter → `--config` → 工作空间 `layout.heading_style` → 默认 `accent`（`accent` / `plain` / `block`）  
 - **凭证**：工作空间 → skill 级 → 环境变量  
 - 公众号配置含 **名称**（`wechat.name`），用于区分多个号；设置页第一项填写  
 
 ## 稿件格式
 
-见 `assets/article_template.md` / `examples/sample.md`。必填 frontmatter：`title`；有封面时填 `cover`。可选 `brand_primary` / `brand_secondary` / 画廊 `<section overflow-x:auto>`。
+见 `assets/article_template.md` / `examples/sample.md`。必填 frontmatter：`title`；有封面时填 `cover`。可选 `brand_primary` / `brand_secondary` / `heading_style` / 画廊 `<section overflow-x:auto>`。
 
 ## 脚本入口
 

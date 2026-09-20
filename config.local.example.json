@@ -6,6 +6,9 @@
   "gallery": {
     "image_width": 62
   },
+  "layout": {
+    "heading_style": "accent"
+  },
   "wechat": {
     "name": "",
     "appId": "",

@@ -4,9 +4,11 @@ title: 推文标题（用于公众号草稿标题）
 cover: ./images/cover.png          # 封面图，相对本文件所在目录即可
 
 # ===== 可选：品牌色 =====
-# 设置后，标题/加粗/表头/引用边框等使用品牌色（去掉则用中性深色主题）
+# 设置后，加粗/表头/引用边框等使用品牌色（去掉则用中性深色主题）
+# 品牌色 ≠ 标题大色块；标题样式见 heading_style
 brand_primary: "#00ff88"           # 品牌主色（十六进制）
-brand_secondary: "#00d4ff"         # 可选：标题渐变次色，缺省自动取主色加深
+brand_secondary: "#00d4ff"         # 可选：次色
+# heading_style: accent            # accent=品牌色字+底线（默认）| plain=纯加粗 | block=实心色块
 
 # ===== 可选：画廊图片宽度 =====
 # gallery_width: 62                # 百分比数字，缺省 62

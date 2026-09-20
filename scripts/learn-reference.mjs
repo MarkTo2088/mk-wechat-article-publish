@@ -2,13 +2,12 @@
 import fs from 'fs';
 import path from 'path';
 import { pathToFileURL } from 'url';
-import { findWorkspaceRoot } from './lib/local-config.mjs';
-import { loadHtml } from './extract-layout.mjs';
+import { loadHtml, applyHeadingStyleToWorkspace } from './extract-layout.mjs';
 import {
   buildStyleTemplate,
   renderTemplateMarkdown,
 } from './lib/style-template.mjs';
-
+import { findWorkspaceRoot } from './lib/local-config.mjs';
 const UA =
   'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36';
 
@@ -130,6 +129,7 @@ if (isCli) {
   fs.mkdirSync(base, { recursive: true });
   fs.writeFileSync(jsonPath, JSON.stringify(stored, null, 2) + '\n', 'utf8');
   fs.writeFileSync(mdPath, renderTemplateMarkdown(report, saved), 'utf8');
+  applyHeadingStyleToWorkspace(report.headingStyle || 'accent', args.startDir);
 
   const imageNote = args.skipImages
     ? '已跳过下载参考图。'
@@ -139,4 +139,9 @@ if (isCli) {
         ? '参考图没下载成功。可改用浏览器另存 HTML 后 --file，或让助手打开原文看图。'
         : '这篇没有可下载的正文图。';
   printReport(report, { json: jsonPath, md: mdPath }, imageNote);
+  console.log(
+    '已写入工作空间 layout.heading_style =',
+    report.headingStyle || 'accent',
+    '（下次发布生效）'
+  );
 }

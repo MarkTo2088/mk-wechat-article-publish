@@ -2,7 +2,7 @@
 import fs from 'fs';
 import path from 'path';
 import { pathToFileURL } from 'url';
-import { findWorkspaceRoot } from './lib/local-config.mjs';
+import { findWorkspaceRoot, patchLocalConfig } from './lib/local-config.mjs';
 
 const UA =
   'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36';
@@ -224,8 +224,17 @@ export function analyzeLayout(html, meta = {}) {
   const secondary = ranked.find(([c]) => c !== primary)?.[0] || '';
 
   const patterns = [];
-  if (counts.headingBlocks >= 1 || counts.headings >= 2) {
-    patterns.push('用短标题把正文切成几段，标题可用品牌色块或品牌色字，避免一大段到底');
+  const headingStyle = counts.headingBlocks >= 1 ? 'block' : 'accent';
+  if (counts.headingBlocks >= 1) {
+    patterns.push(
+      '对标有品牌色标题色块：可用 heading_style=block；短标题分段，避免一大段到底'
+    );
+  } else if (counts.headings >= 2) {
+    patterns.push(
+      '用短标题把正文切成几段；标题用品牌色字与底线，不要大面积实心色块（heading_style=accent）'
+    );
+  } else if (counts.headings >= 1) {
+    patterns.push('标题用品牌色字即可，不要做成大色块');
   }
   if (counts.quotes >= 1) {
     patterns.push('关键句用引用块（左边框）单独拎出来');
@@ -257,6 +266,9 @@ export function analyzeLayout(html, meta = {}) {
     title ? `对标标题（仅识别来源，勿照抄）：${title}` : '',
     accountName ? `对标账号：${accountName}` : '',
     primary ? `可参考主色 ${primary}${secondary ? `，次色 ${secondary}` : ''}` : '',
+    `标题样式 heading_style=${headingStyle}（${
+      headingStyle === 'block' ? '对标有色块' : '对标无大色块，用文字品牌色'
+    }）`,
     ...patterns.map((p) => `- ${p}`),
     '只借鉴排版和节奏，不要复制对标文的句子、标题或图片。',
   ]
@@ -269,6 +281,7 @@ export function analyzeLayout(html, meta = {}) {
     title,
     accountName,
     brand: { primary, secondary },
+    headingStyle,
     typography: {
       bodyFontSize: topKey(fontSize),
       lineHeight: topKey(lineHeight),
@@ -321,6 +334,18 @@ export function saveLayoutRef(report, startDir) {
   fs.mkdirSync(path.dirname(file), { recursive: true });
   fs.writeFileSync(file, JSON.stringify(report, null, 2) + '\n', 'utf8');
   return { root, file };
+}
+
+/** 把对标识别的标题样式写入工作空间配置，发布时直接生效 */
+export function applyHeadingStyleToWorkspace(headingStyle, startDir) {
+  const style =
+    headingStyle === 'block' || headingStyle === 'plain' || headingStyle === 'accent'
+      ? headingStyle
+      : 'accent';
+  return patchLocalConfig(
+    { layout: { heading_style: style } },
+    { startDir }
+  );
 }
 
 function parseArgs(argv) {
@@ -378,5 +403,11 @@ if (isCli) {
     process.exit(1);
   }
   const saved = saveLayoutRef(report, args.startDir);
+  applyHeadingStyleToWorkspace(report.headingStyle, args.startDir);
   printReport(report, saved);
+  console.log(
+    '已写入工作空间 layout.heading_style =',
+    report.headingStyle,
+    '（下次发布生效）'
+  );
 }

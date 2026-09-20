@@ -166,6 +166,7 @@ export function buildStyleTemplate(html, meta = {}) {
     layout.brand.primary
       ? `主色 ${layout.brand.primary}${layout.brand.secondary ? `，次色 ${layout.brand.secondary}` : ''}`
       : '',
+    `标题样式：heading_style=${layout.headingStyle || 'accent'}（品牌色≠色块；无色块对标用 accent）`,
     rhythm ? `图文节奏：${rhythm}` : '',
     ...layout.patterns.map((p) => `- ${p}`),
     '',
@@ -207,6 +208,7 @@ ${report.voice.techniques.map((t) => `- ${t}`).join('\n')}
 ## 视觉排版
 
 ${report.brand.primary ? `- 主色 ${report.brand.primary}${report.brand.secondary ? `，次色 ${report.brand.secondary}` : ''}` : '- 未识别到品牌色'}
+- 标题样式：\`heading_style=${report.headingStyle || 'accent'}\`（品牌色不等于大色块；对标无色块时用 accent）
 ${report.rhythm ? `- 图文节奏：${report.rhythm}` : ''}
 ${report.patterns.map((p) => `- ${p}`).join('\n')}
 

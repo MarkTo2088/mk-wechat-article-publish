@@ -7,7 +7,7 @@
 | 能力 | 说明 | 是否可选 |
 | --- | --- | --- |
 | 协助写稿 | 按选题或素材起草，确认后再发草稿 | 默认 |
-| 品牌色 | 标题/加粗/表头/引用边框使用品牌主色；可手动选色，也可让助手按描述生成 | 可选 |
+| 品牌色 | 加粗/表头/引用用品牌主色；标题默认是品牌色字+底线，不是大色块 | 可选 |
 | 横向滑动画廊 | 多图左右滑动浏览 | 可选 |
 | 小程序码 | 生成小程序码图片，方便读者长按进入小程序 | 可选 |
 | 本地统一设置 | 主题色与凭证写入工作空间 `.mk-wechat-publish/`（多公众号分项目） | 推荐 |
@@ -79,6 +79,7 @@ mk-wechat-article-publish/
 
 **配置优先级（多公众号）**  
 品牌色：文章 frontmatter → `--config` → **工作空间** `.mk-wechat-publish/config.json` → skill 级 `config.local.json` → 默认  
+标题样式 `heading_style`：frontmatter → 配置 → 默认 **`accent`**（品牌色字，无实心底）。对标有色块时学参考会写成 `block`；也可手动 `plain` / `block`。  
 凭证：**工作空间** → skill 级 → 环境变量  
 公众号名称写在 `wechat.name`（设置页第一项），发布与探测时会显示，方便核对是哪个号。  
 
@@ -149,7 +150,8 @@ bash install.sh all             # 装到本脚本已知的全部目标
 title: 你的标题
 cover: ./images/cover.png          # 封面，相对本文件路径
 brand_primary: "#00ff88"           # 可选：品牌主色
-brand_secondary: "#00d4ff"         # 可选：标题渐变次色
+brand_secondary: "#00d4ff"         # 可选：次色
+heading_style: accent              # accent=字色+底线（默认）| plain | block=实心色块
 ---
 
 ![封面](images/cover.png)
@@ -171,7 +173,8 @@ brand_secondary: "#00d4ff"         # 可选：标题渐变次色
 
 **要点**：
 - 图片用**相对文章所在目录**的路径，最稳
-- 品牌色：frontmatter > `--config` > 工作空间配置 > skill 级 > 默认
+- 品牌色：frontmatter > `--config` > 工作空间配置 > skill 级 > 默认  
+- **品牌色 ≠ 标题大色块**：默认 `heading_style: accent`；要色块写 `block`，或学对标时自动写入  
 - 多篇共用：在本工作空间跑一次设置页即可；换项目即换公众号配置
 - **品牌色两种维护方式**：
   1. **手动**：`bash scripts/settings.sh`，或 dry-run 顶栏选色后保存  
