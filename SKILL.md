@@ -40,6 +40,7 @@ agent_created: true
    - 用几句话向用户复述这套模板，再按它写用户自己的选题  
    - 生图时把图片风格写进提示词，并要求无水印、无角标、无 logo  
    - **不要**复制参考文的句子和标题，**不要**把参考图放进新稿  
+   - 脚本会按对标是否有标题色块写入工作空间 `layout.heading_style`（无色块→`accent`，有色块→`block`），下次发布自动生效  
    - 只要排版、不学文风时，才用 `bash scripts/extract-layout.sh`  
    - 链接被微信拦截时，让用户另存 HTML，再 `bash scripts/learn-reference.sh --file page.html`
 
