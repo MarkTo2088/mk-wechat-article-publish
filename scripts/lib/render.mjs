@@ -156,7 +156,7 @@ export function renderMarkdown(markdownBody, opts = {}) {
     const token = tokens[idx];
     const content = md.utils.escapeHtml(token.content);
     return `<pre${styleAttrs(
-      `margin:1em 0;padding:12px 14px;background:${pal.codeBg};border-radius:4px;overflow-x:auto;line-height:1.5;font-size:13px;`
+      `margin:1em 0;padding:12px 14px;background:${pal.codeBg};border-radius:4px;white-space:pre-wrap;word-break:break-all;overflow-x:auto;line-height:1.5;font-size:13px;`
     )}><code${styleAttrs(`color:${pal.text};`)}>${content}</code></pre>\n`;
   };
 
