@@ -41,7 +41,8 @@ mk-wechat-article-publish/
 │   ├── extract-layout.sh     # 从对标链接提炼排版参考
 │   ├── learn-reference.sh    # 从参考链接提炼说话方式、排版、图片风格
 │   ├── onboard.sh            # 首次引导：自动开设置 + 探测
-│   ├── print-promo.sh        # 安装完成后的关注提示
+│   ├── print-promo.sh        # 安装完成后的关注提示 + 请 Star
+│   ├── ask-star.sh           # 打开仓库页 / 用户同意后代为点 Star
 │   ├── probe.sh              # 探测公网 IP / 白名单 / 凭证
 │   ├── publish.sh            # 发布入口
 │   ├── publish.mjs
@@ -103,6 +104,8 @@ cd mk-wechat-article-publish
 bash install.sh cursor          # 或 claude / codex / qwen / doubao / agents …
 bash install.sh all             # 装到本脚本已知的全部目标
 ```
+
+装完会跑首次引导，并请你给仓库点一个 Star（可选，说一声「好」即可）。
 
 ### 各端安装位置
 
